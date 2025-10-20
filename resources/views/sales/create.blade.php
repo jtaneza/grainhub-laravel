@@ -1,93 +1,142 @@
 @extends('layouts.app')
-
 @section('title', 'Add Sale')
 
 @section('content')
-    <div class="container">
-        <h2>Add Sale</h2>
-
-        <div class="mb-3">
-            <input type="text" id="product_search" class="form-control" placeholder="Search product...">
-            <div id="search_results" class="list-group mt-1"></div>
-        </div>
-
-        <table class="table table-bordered" id="sale_table">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="d-flex justify-content-between align-items-center">
+      <h3 class="mb-0"><i class="glyphicon glyphicon-plus"></i> Add Sale</h3>
+      <a href="{{ route('sales.index') }}" class="btn btn-secondary">
+        <i class="glyphicon glyphicon-arrow-left"></i> Back
+      </a>
     </div>
+  </div>
+</div>
 
-    <script>
-        $(document).ready(function () {
-            // 🔍 Product live search
-            $('#product_search').on('keyup', function () {
-                let q = $(this).val();
-                if (q.length < 1) { $('#search_results').empty(); return; }
+<div class="row">
+  <div class="col-md-6">
+    <div id="message" class="alert d-none"></div>
 
-                $.get('{{ route("sales.search") }}', { q }, function (data) {
-                    let html = '';
-                    data.forEach(p => {
-                        html += `<a href="#" class="list-group-item list-group-item-action select-product" data-id="${p.id}" data-name="${p.name}" data-price="${p.sale_price}">${p.name} - ₱${p.sale_price}</a>`;
-                    });
-                    $('#search_results').html(html);
-                });
-            });
+    <form id="search-form">
+      <div class="form-group position-relative">
+        <label for="sug_input" class="fw-bold">Search Product</label>
+        <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+          <input type="text" id="sug_input" class="form-control" placeholder="Type product name...">
+        </div>
+        <div id="result"
+             class="list-group position-absolute w-100 mt-1 shadow-sm"
+             style="z-index: 1000;"></div>
+      </div>
+    </form>
+  </div>
+</div>
 
-            // 🖱 Select product from search
-            $(document).on('click', '.select-product', function (e) {
-                e.preventDefault();
-                let id = $(this).data('id');
-                let name = $(this).data('name');
-                let price = $(this).data('price');
+<div class="row mt-4">
+  <div class="col-md-12">
+    <div class="panel panel-default shadow">
+      <div class="panel-heading clearfix bg-primary text-white p-2 rounded-top">
+        <strong><i class="glyphicon glyphicon-th"></i> Sale Entry</strong>
+      </div>
 
-                let row = `<tr>
-                <td>${name}<input type="hidden" name="product_id" value="${id}"></td>
-                <td><input type="number" class="form-control price" value="${price}"></td>
-                <td><input type="number" class="form-control qty" value="1"></td>
-                <td class="total">${price}</td>
-                <td><input type="date" class="form-control date" value="{{ date('Y-m-d') }}"></td>
-                <td><button class="btn btn-success btn-add-sale">Add</button></td>
-            </tr>`;
+      <div class="panel-body p-3 bg-light">
+        <form id="add-sale-form">
+          <table class="table table-bordered table-striped">
+            <thead class="table-primary">
+              <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="product_info"></tbody>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-                $('#sale_table tbody').append(row);
-                $('#search_results').empty();
-                $('#product_search').val('');
-            });
+{{-- ✅ JS for AJAX functionality --}}
+<script>
+$(document).ready(function() {
+  // 🔍 Live search
+  $("#sug_input").on("keyup", function() {
+    const query = $(this).val().trim();
+    if (query.length < 1) {
+      $("#result").fadeOut();
+      return;
+    }
 
-            // ➕ Add sale via AJAX
-            $(document).on('click', '.btn-add-sale', function () {
-                let row = $(this).closest('tr');
-                let data = {
-                    product_id: row.find('input[name="product_id"]').val(),
-                    price: row.find('.price').val(),
-                    qty: row.find('.qty').val(),
-                    date: row.find('.date').val(),
-                    _token: '{{ csrf_token() }}'
-                };
-
-                $.post('{{ route("sales.store") }}', data, function (res) {
-                    alert(`Sale added: ${res.item} (${res.qty} pcs)`);
-                    row.remove();
-                }).fail(function (err) {
-                    alert(err.responseJSON.error);
-                });
-            });
-
-            // 💲 Recalculate total
-            $(document).on('input', '.qty, .price', function () {
-                let row = $(this).closest('tr');
-                let total = row.find('.price').val() * row.find('.qty').val();
-                row.find('.total').text(total);
-            });
+    $.ajax({
+      url: "{{ route('sales.search') }}",
+      type: "GET",
+      data: { query },
+      success: function(data) {
+        let html = "";
+        data.forEach(item => {
+          html += `<a href="#" class="list-group-item list-group-item-action suggestion-item" 
+                      data-id="${item.id}" data-name="${item.name}">
+                      <i class='glyphicon glyphicon-tag'></i> ${item.name}
+                   </a>`;
         });
-    </script>
+        $("#result").html(html).fadeIn();
+      }
+    });
+  });
+
+  // 🖱 Select suggestion
+  $(document).on("click", ".suggestion-item", function(e) {
+    e.preventDefault();
+    const id = $(this).data("id");
+    $("#result").fadeOut();
+
+    $.ajax({
+      url: "{{ route('sales.getProduct') }}",
+      type: "POST",
+      data: { id, _token: '{{ csrf_token() }}' },
+      success: function(res) {
+        $("#product_info").html(res.html);
+      }
+    });
+  });
+
+  // 💾 Add sale
+  $(document).on("click", "#btn-add-sale", function(e) {
+    e.preventDefault();
+
+    const row = $(this).closest("tr");
+    const data = {
+      product_id: row.find("input[name='product_id']").val(),
+      quantity: row.find("input[name='quantity']").val(),
+      _token: '{{ csrf_token() }}'
+    };
+
+    $.ajax({
+      url: "{{ route('sales.store') }}",
+      type: "POST",
+      data,
+      success: function(res) {
+        if (res.success) {
+          alert("✅ Sale added by " + res.sale.admin);
+          $("#product_info").empty();
+          $("#sug_input").val("");
+        } else {
+          alert("⚠️ " + res.error);
+        }
+      }
+    });
+  });
+
+  // 🧹 Hide suggestion box when clicking outside
+  $(document).on("click", function(e) {
+    if (!$(e.target).closest("#sug_input, #result").length) {
+      $("#result").fadeOut();
+    }
+  });
+});
+</script>
 @endsection

@@ -13,15 +13,16 @@ class Product extends Model
     protected $table = 'products';
 
     protected $fillable = [
-        'name',
-        'quantity',
-        'buy_price',
-        'sale_price',
-        'media_id',
-        'category_id',
-        'supplier_id',
-        'date',
-    ];
+    'name',
+    'quantity',
+    'buy_price',
+    'sale_price',
+    'media_id',
+    'category_id',
+    'supplier_id',
+    'date',
+    'admin_name', // ✅ Add this
+];
 
     // ✅ Disable Laravel timestamps because your table doesn't have created_at / updated_at
     public $timestamps = false;

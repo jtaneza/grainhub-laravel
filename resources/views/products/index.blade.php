@@ -45,6 +45,7 @@
               <th class="text-center" style="width: 10%;">Buying Price</th>
               <th class="text-center" style="width: 10%;">Selling Price</th>
               <th class="text-center" style="width: 15%;">Entry Date</th>
+              <th class="text-center" style="width: 10%;">Admin Name</th> {{-- ✅ New column --}}
               <th class="text-center" style="width: 100px;">Actions</th>
             </tr>
           </thead>
@@ -56,9 +57,11 @@
                 {{-- 🖼 Product Image --}}
                 <td class="text-center">
                   @if($product->media && $product->media->file_name)
-                    <img src="{{ asset('uploads/products/'.$product->media->file_name) }}" class="img-avatar img-circle" width="50" height="50" alt="">
+                    <img src="{{ asset('uploads/products/'.$product->media->file_name) }}"
+                         class="img-avatar img-circle" width="50" height="50" alt="">
                   @else
-                    <img src="{{ asset('uploads/products/no_image.png') }}" class="img-avatar img-circle" width="50" height="50" alt="">
+                    <img src="{{ asset('uploads/products/no_image.png') }}"
+                         class="img-avatar img-circle" width="50" height="50" alt="">
                   @endif
                 </td>
 
@@ -87,6 +90,11 @@
                   {{ \Carbon\Carbon::parse($product->date)->format('F d, Y, h:i:s a') }}
                 </td>
 
+                {{-- 👤 Admin Name --}}
+                <td class="text-center">
+                  {{ $product->admin_name ?? 'Unknown' }}
+                </td>
+
                 {{-- 🧰 Actions --}}
                 <td class="text-center">
                   <div class="btn-group">
@@ -96,7 +104,8 @@
                     <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
                       @csrf
                       @method('DELETE')
-                      <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Delete this product?')" title="Delete">
+                      <button type="submit" class="btn btn-danger btn-xs"
+                              onclick="return confirm('Delete this product?')" title="Delete">
                         <span class="glyphicon glyphicon-trash"></span>
                       </button>
                     </form>
@@ -105,7 +114,7 @@
               </tr>
             @empty
               <tr>
-                <td colspan="10" class="text-center">No products found.</td>
+                <td colspan="11" class="text-center">No products found.</td>
               </tr>
             @endforelse
           </tbody>

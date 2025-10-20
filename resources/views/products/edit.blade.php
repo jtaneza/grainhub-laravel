@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add Product')
+@section('title', 'Edit Product')
 
 @section('content')
 <div class="container-fluid" style="padding: 20px;">
@@ -8,7 +8,7 @@
     <div class="panel panel-default">
         <div class="panel-heading" style="background-color: #f8f8f8; border-bottom: 2px solid #f0ad4e;">
             <h3 class="panel-title" style="font-weight: bold;">
-                <i class="glyphicon glyphicon-plus"></i> ADD PRODUCT
+                <i class="glyphicon glyphicon-edit"></i> EDIT PRODUCT
             </h3>
         </div>
 
@@ -24,8 +24,9 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data">
                 @csrf
+                @method('PUT')
 
                 {{-- 🏷 Product Name --}}
                 <div class="form-group">
@@ -35,7 +36,7 @@
                         <input type="text"
                                name="name"
                                class="form-control"
-                               value="{{ old('name') }}"
+                               value="{{ old('name', $product->name) }}"
                                placeholder="Enter product name"
                                required>
                     </div>
@@ -49,7 +50,7 @@
                             <select name="category_id" class="form-control" required>
                                 <option value="">Select Category</option>
                                 @foreach ($categories as $cat)
-                                    <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>
+                                    <option value="{{ $cat->id }}" {{ $product->category_id == $cat->id ? 'selected' : '' }}>
                                         {{ $cat->name }}
                                     </option>
                                 @endforeach
@@ -63,7 +64,7 @@
                             <select name="supplier_id" class="form-control">
                                 <option value="">Select Supplier</option>
                                 @foreach ($suppliers as $sup)
-                                    <option value="{{ $sup->id }}" {{ old('supplier_id') == $sup->id ? 'selected' : '' }}>
+                                    <option value="{{ $sup->id }}" {{ $product->supplier_id == $sup->id ? 'selected' : '' }}>
                                         {{ $sup->name }}
                                     </option>
                                 @endforeach
@@ -78,7 +79,7 @@
                             <div class="input-group">
                                 <input type="text"
                                        class="form-control"
-                                       value="No file chosen"
+                                       value="Current: {{ $product->media ? $product->media->file_name : 'No file' }}"
                                        readonly>
                                 <span class="input-group-btn">
                                     <button type="button" class="btn btn-primary" onclick="document.getElementById('photo').click();">
@@ -97,7 +98,7 @@
                         <div class="form-group">
                             <label class="control-label">Quantity</label>
                             <input type="number" name="quantity" class="form-control"
-                                   value="{{ old('quantity') }}" required>
+                                   value="{{ old('quantity', $product->quantity) }}" required>
                         </div>
                     </div>
 
@@ -105,7 +106,7 @@
                         <div class="form-group">
                             <label class="control-label">Buying Price</label>
                             <input type="number" step="0.01" name="buy_price" class="form-control"
-                                   value="{{ old('buy_price') }}" required>
+                                   value="{{ old('buy_price', $product->buy_price) }}" required>
                         </div>
                     </div>
 
@@ -113,7 +114,7 @@
                         <div class="form-group">
                             <label class="control-label">Selling Price</label>
                             <input type="number" step="0.01" name="sale_price" class="form-control"
-                                   value="{{ old('sale_price') }}" required>
+                                   value="{{ old('sale_price', $product->sale_price) }}" required>
                         </div>
                     </div>
                 </div>
@@ -122,14 +123,14 @@
                 <div class="form-group">
                     <label class="control-label">Admin Name</label>
                     <input type="text" name="admin_name" class="form-control"
-                           value="{{ Auth::user()->name ?? 'Unknown' }}" readonly>
+                           value="{{ Auth::user()->name ?? $product->admin_name ?? 'Unknown' }}" readonly>
                 </div>
 
-                {{-- ✅ Save Button (Bottom Left) --}}
+                {{-- ✅ Update Button (Bottom Left) --}}
                 <div class="row">
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-success btn-block">
-                            <i class="glyphicon glyphicon-save"></i> Save Product
+                            <i class="glyphicon glyphicon-ok"></i> Update Product
                         </button>
                     </div>
                 </div>
