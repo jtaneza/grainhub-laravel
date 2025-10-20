@@ -43,64 +43,71 @@
         </div>
     @endif
 
-    {{-- ✅ Stats Panels --}}
-    <div class="row">
-        <a href="{{ route('users.index') }}" style="color:black;">
-            <div class="col-md-3">
-                <div class="panel panel-box clearfix">
-                    <div class="panel-icon pull-left bg-secondary1">
-                        <i class="glyphicon glyphicon-user"></i>
-                    </div>
-                    <div class="panel-value pull-right">
-                        <h2 class="margin-top">{{ $usersCount }}</h2>
-                        <p class="text-muted">Users</p>
-                    </div>
-                </div>
-            </div>
-        </a>
+ {{-- ✅ Stats Panels (icon left, label + number centered) --}}
+<div class="row text-center">
 
-        <a href="{{ route('categories.index') }}" style="color:black;">
-            <div class="col-md-3">
-                <div class="panel panel-box clearfix">
-                    <div class="panel-icon pull-left bg-red">
-                        <i class="glyphicon glyphicon-th-large"></i>
-                    </div>
-                    <div class="panel-value pull-right">
-                        <h2 class="margin-top">{{ $categoriesCount }}</h2>
-                        <p class="text-muted">Categories</p>
-                    </div>
+    {{-- Users --}}
+    <a href="{{ route('users.index') }}" style="color:black;">
+        <div class="col-md-3">
+            <div class="panel panel-box clearfix" style="display:flex; align-items:center; justify-content:center; height:100px;">
+                <div class="panel-icon bg-secondary1" style="margin-right:12px;">
+                    <i class="glyphicon glyphicon-user"></i>
+                </div>
+                <div class="panel-value" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <p class="text-muted" style="margin:0; font-size:16px;">Users</p>
+                    <h2 style="margin:0; font-size:22px; font-weight:bold;">{{ $usersCount }}</h2>
                 </div>
             </div>
-        </a>
+        </div>
+    </a>
 
-        <a href="{{ route('products.index') }}" style="color:black;">
-            <div class="col-md-3">
-                <div class="panel panel-box clearfix">
-                    <div class="panel-icon pull-left bg-blue2">
-                        <i class="glyphicon glyphicon-shopping-cart"></i>
-                    </div>
-                    <div class="panel-value pull-right">
-                        <h2 class="margin-top">{{ $productsCount }}</h2>
-                        <p class="text-muted">Products</p>
-                    </div>
+    {{-- Categories --}}
+    <a href="{{ route('categories.index') }}" style="color:black;">
+        <div class="col-md-3">
+            <div class="panel panel-box clearfix" style="display:flex; align-items:center; justify-content:center; height:100px;">
+                <div class="panel-icon bg-red" style="margin-right:12px;">
+                    <i class="glyphicon glyphicon-th-large"></i>
+                </div>
+                <div class="panel-value" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <p class="text-muted" style="margin:0; font-size:16px;">Categories</p>
+                    <h2 style="margin:0; font-size:22px; font-weight:bold;">{{ $categoriesCount }}</h2>
                 </div>
             </div>
-        </a>
+        </div>
+    </a>
 
-        <a href="{{ route('sales.index') }}" style="color:black;">
-            <div class="col-md-3">
-                <div class="panel panel-box clearfix">
-                    <div class="panel-icon pull-left bg-green">
-                        <i class="glyphicon glyphicon-usd"></i>
-                    </div>
-                    <div class="panel-value pull-right">
-                        <h2 class="margin-top">{{ $salesCount }}</h2>
-                        <p class="text-muted">Sales</p>
-                    </div>
+    {{-- Products --}}
+    <a href="{{ route('products.index') }}" style="color:black;">
+        <div class="col-md-3">
+            <div class="panel panel-box clearfix" style="display:flex; align-items:center; justify-content:center; height:100px;">
+                <div class="panel-icon bg-blue2" style="margin-right:12px;">
+                    <i class="glyphicon glyphicon-shopping-cart"></i>
+                </div>
+                <div class="panel-value" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <p class="text-muted" style="margin:0; font-size:16px;">Products</p>
+                    <h2 style="margin:0; font-size:22px; font-weight:bold;">{{ $productsCount }}</h2>
                 </div>
             </div>
-        </a>
-    </div>
+        </div>
+    </a>
+
+    {{-- Sales --}}
+    <a href="{{ route('sales.index') }}" style="color:black;">
+        <div class="col-md-3">
+            <div class="panel panel-box clearfix" style="display:flex; align-items:center; justify-content:center; height:100px;">
+                <div class="panel-icon bg-green" style="margin-right:12px;">
+                    <i class="glyphicon glyphicon-usd"></i>
+                </div>
+                <div class="panel-value" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <p class="text-muted" style="margin:0; font-size:16px;">Sales</p>
+                    <h2 style="margin:0; font-size:22px; font-weight:bold;">{{ $salesCount }}</h2>
+                </div>
+            </div>
+        </div>
+    </a>
+
+</div>
+
 
     {{-- ✅ Recent Sales Table --}}
     <div class="row">
