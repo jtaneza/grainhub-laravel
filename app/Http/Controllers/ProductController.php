@@ -83,7 +83,6 @@ class ProductController extends Controller
     'date'        => now('Asia/Manila'),    // ✅ real time
 ]);
 
-
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
