@@ -109,42 +109,49 @@
 </div>
 
 
-    {{-- ✅ Recent Sales Table --}}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <strong><span class="glyphicon glyphicon-stats"></span> Recent Sales</strong>
-                </div>
-                <div class="panel-body">
-                    <table class="table table-striped table-bordered table-condensed">
-                        <thead>
+{{-- ✅ Recent Sales Table --}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong><span class="glyphicon glyphicon-stats"></span> Recent Sales</strong>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped table-bordered table-condensed">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 50px;">#</th>
+                            <th>Product Name</th>
+                            <th>Qty</th>
+                            <th>Total Sale</th>
+                            <th>Admin</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($recentSales as $index => $sale)
                             <tr>
-                                <th class="text-center" style="width: 50px;">#</th>
-                                <th>Product Name</th>
-                                <th>Date</th>
-                                <th>Total Sale</th>
+                                <td class="text-center">{{ $index + 1 }}</td>
+                                <td>{{ $sale->product->name ?? $sale->name ?? 'N/A' }}</td>
+                                <td>{{ $sale->quantity ?? 0 }}</td>
+                                <td>₱{{ number_format(($sale->price * $sale->quantity), 2) }}</td>
+                                <td>{{ $sale->user->name ?? 'N/A' }}</td>
+                                <td>
+                                    {{ $sale->created_at ? $sale->created_at->format('Y-m-d h:i A') : 'N/A' }}
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($recentSales as $index => $sale)
-                                <tr>
-                                    <td class="text-center">{{ $index + 1 }}</td>
-                                    <td>{{ $sale->product->name ?? $sale->name ?? 'N/A' }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($sale->date)->format('Y-m-d') }}</td>
-                                    <td>₱{{ number_format($sale->price, 2) }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center">No recent sales found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">No recent sales found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
+
 
     {{-- ✅ Chart Section --}}
     <div class="row">

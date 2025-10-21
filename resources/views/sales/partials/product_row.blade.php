@@ -18,7 +18,13 @@
     </td>
 
     <td class="text-center">
-        {{ now()->format('Y-m-d') }}
+        {{ Auth::user()->name }}
+        <input type="hidden" name="admin_name" value="{{ Auth::user()->name }}">
+    </td>
+
+    <td class="text-center">
+        {{ now()->format('Y-m-d H:i:s') }}
+        <input type="hidden" name="date" value="{{ now()->format('Y-m-d H:i:s') }}">
     </td>
 
     <td class="text-center">
@@ -29,27 +35,30 @@
 </tr>
 
 <script>
-    $(document).ready(function () {
-        const row = $('tr').last();
+$(document).ready(function () {
+    const row = $('tr').last();
 
-        // 🧮 Auto-update total when quantity changes
-        row.find('.quantity-input').on('input', function () {
-            const qty = parseInt($(this).val()) || 0;
-            const price = parseFloat(row.find('.unit-price').text().replace(/[₱,]/g, '')) || 0;
-            const total = qty * price;
-            row.find('.total').text(total.toLocaleString('en-PH', { minimumFractionDigits: 2 }));
-        });
-
-        // ✅ Prevent exceeding max stock
-        row.find('.quantity-input').on('change', function () {
-            const max = parseInt($(this).attr('max')) || 0;
-            const val = parseInt($(this).val()) || 0;
-            if (val > max) {
-                alert(`⚠️ Only ${max} units left in stock.`);
-                $(this).val(max).trigger('input');
-            } else if (val < 1) {
-                $(this).val(1).trigger('input');
-            }
-        });
+    // 🧮 Auto-update total when quantity changes
+    row.find('.quantity-input').on('input', function () {
+        const qty = parseInt($(this).val()) || 0;
+        const price = parseFloat(row.find('.unit-price').text().replace(/[₱,]/g, '')) || 0;
+        const total = qty * price;
+        row.find('.total').text(total.toLocaleString('en-PH', { minimumFractionDigits: 2 }));
     });
+
+    // ✅ Prevent exceeding max stock and minimum 1
+    row.find('.quantity-input').on('change', function () {
+        const max = parseInt($(this).attr('max')) || 0;
+        let val = parseInt($(this).val()) || 0;
+
+        if (val > max) {
+            alert(`⚠️ Only ${max} units left in stock.`);
+            val = max;
+        } else if (val < 1) {
+            val = 1;
+        }
+
+        $(this).val(val).trigger('input');
+    });
+});
 </script>

@@ -1,142 +1,139 @@
-@extends('layouts.app')
-@section('title', 'Add Sale')
-
-@section('content')
-<div class="row mb-3">
-  <div class="col-md-12">
-    <div class="d-flex justify-content-between align-items-center">
-      <h3 class="mb-0"><i class="glyphicon glyphicon-plus"></i> Add Sale</h3>
-      <a href="{{ route('sales.index') }}" class="btn btn-secondary">
-        <i class="glyphicon glyphicon-arrow-left"></i> Back
-      </a>
-    </div>
-  </div>
+<div class="modal-header">
+    <h4 class="modal-title">Add Sale</h4>
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
 </div>
 
-<div class="row">
-  <div class="col-md-6">
-    <div id="message" class="alert d-none"></div>
+<div class="modal-body">
+    <div class="form-group">
+        <input type="text" id="searchProduct" class="form-control" placeholder="Search for product name...">
+        <div id="searchResults" class="list-group" style="position:absolute; z-index:1000; width:95%; display:none;"></div>
+    </div>
 
-    <form id="search-form">
-      <div class="form-group position-relative">
-        <label for="sug_input" class="fw-bold">Search Product</label>
-        <div class="input-group">
-          <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-          <input type="text" id="sug_input" class="form-control" placeholder="Type product name...">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <strong><span class="glyphicon glyphicon-th"></span> Sale Entry</strong>
         </div>
-        <div id="result"
-             class="list-group position-absolute w-100 mt-1 shadow-sm"
-             style="z-index: 1000;"></div>
-      </div>
-    </form>
-  </div>
-</div>
 
-<div class="row mt-4">
-  <div class="col-md-12">
-    <div class="panel panel-default shadow">
-      <div class="panel-heading clearfix bg-primary text-white p-2 rounded-top">
-        <strong><i class="glyphicon glyphicon-th"></i> Sale Entry</strong>
-      </div>
-
-      <div class="panel-body p-3 bg-light">
-        <form id="add-sale-form">
-          <table class="table table-bordered table-striped">
-            <thead class="table-primary">
-              <tr>
-                <th>Item</th>
-                <th>Price</th>
-                <th>Qty</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="product_info"></tbody>
-          </table>
-        </form>
-      </div>
+        <div class="panel-body">
+            <form id="addSaleForm">
+                @csrf
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>Admin</th>
+                            <th>Date/Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productInfo"></tbody>
+                </table>
+            </form>
+        </div>
     </div>
-  </div>
 </div>
 
-{{-- ✅ JS for AJAX functionality --}}
 <script>
-$(document).ready(function() {
-  // 🔍 Live search
-  $("#sug_input").on("keyup", function() {
-    const query = $(this).val().trim();
-    if (query.length < 1) {
-      $("#result").fadeOut();
-      return;
-    }
+$(document).ready(function () {
+    // 🔍 Search products
+    $('#searchProduct').on('keyup', function () {
+        const query = $(this).val().trim();
+        if (!query) return $('#searchResults').hide();
 
-    $.ajax({
-      url: "{{ route('sales.search') }}",
-      type: "GET",
-      data: { query },
-      success: function(data) {
-        let html = "";
-        data.forEach(item => {
-          html += `<a href="#" class="list-group-item list-group-item-action suggestion-item" 
-                      data-id="${item.id}" data-name="${item.name}">
-                      <i class='glyphicon glyphicon-tag'></i> ${item.name}
-                   </a>`;
+        $.get("{{ route('sales.search') }}", { query }, function (data) {
+            let html = '';
+            data.forEach(item => {
+                html += `<a href="#" class="list-group-item suggestion-item" 
+                            data-id="${item.id}" 
+                            data-name="${item.name}" 
+                            data-price="${item.sale_price}" 
+                            data-stock="${item.quantity}">
+                            ${item.name} — ₱${item.sale_price} (${item.quantity} in stock)
+                        </a>`;
+            });
+            $('#searchResults').html(html).fadeIn();
         });
-        $("#result").html(html).fadeIn();
-      }
     });
-  });
 
-  // 🖱 Select suggestion
-  $(document).on("click", ".suggestion-item", function(e) {
-    e.preventDefault();
-    const id = $(this).data("id");
-    $("#result").fadeOut();
+    // 🖱 Select a product from suggestions
+    $(document).on('click', '.suggestion-item', function (e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        const price = parseFloat($(this).data('price'));
+        const stock = parseInt($(this).data('stock'));
+        $('#searchResults').hide();
 
-    $.ajax({
-      url: "{{ route('sales.getProduct') }}",
-      type: "POST",
-      data: { id, _token: '{{ csrf_token() }}' },
-      success: function(res) {
-        $("#product_info").html(res.html);
-      }
+        const cashier = '{{ Auth::user()->name }}';
+
+        const html = `
+            <tr>
+                <td>
+                    <strong>${name}</strong>
+                    <input type="hidden" name="product_id" value="${id}">
+                </td>
+                <td class="text-center">₱<span class="unit-price">${price.toFixed(2)}</span></td>
+                <td class="text-center">
+                    <input type="number" name="quantity" value="1" min="1" max="${stock}" class="form-control quantity-input text-center" style="width:80px;">
+                </td>
+                <td class="text-center">₱<span class="total">${price.toFixed(2)}</span></td>
+                <td class="text-center">${cashier}</td>
+                <td class="text-center">—</td> <!-- Server will handle date -->
+                <td class="text-center">
+                    <button type="button" class="btn btn-success btn-sm btn-add-sale">
+                        <i class="glyphicon glyphicon-plus"></i> Add
+                    </button>
+                </td>
+            </tr>
+        `;
+
+        $('#productInfo').html(html);
     });
-  });
 
-  // 💾 Add sale
-  $(document).on("click", "#btn-add-sale", function(e) {
-    e.preventDefault();
+    // 💾 Add Sale AJAX
+    $(document).on('click', '.btn-add-sale', function () {
+        const row = $(this).closest('tr');
+        const data = {
+            _token: '{{ csrf_token() }}',
+            product_id: row.find('input[name="product_id"]').val(),
+            quantity: row.find('input[name="quantity"]').val(),
+            admin_name: '{{ Auth::user()->name }}'
+        };
 
-    const row = $(this).closest("tr");
-    const data = {
-      product_id: row.find("input[name='product_id']").val(),
-      quantity: row.find("input[name='quantity']").val(),
-      _token: '{{ csrf_token() }}'
-    };
+        $.ajax({
+            url: "{{ route('sales.store') }}",
+            method: 'POST',
+            data: data,
+            success: function (res) {
+                if (res.success) {
+                    $('#addSaleModal').modal('hide');
+                    alert(`✅ Sale added by ${res.sale.admin} at ${res.sale.date}`);
+                    location.reload(); // Refresh table to show correct server date
+                } else {
+                    alert(res.error || '⚠️ Something went wrong.');
+                }
+            },
+            error: function () {
+                alert('⚠️ Error saving sale.');
+            }
+        });
+    });
 
-    $.ajax({
-      url: "{{ route('sales.store') }}",
-      type: "POST",
-      data,
-      success: function(res) {
-        if (res.success) {
-          alert("✅ Sale added by " + res.sale.admin);
-          $("#product_info").empty();
-          $("#sug_input").val("");
-        } else {
-          alert("⚠️ " + res.error);
+    // 🧹 Hide suggestions when clicking outside
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#searchProduct, #searchResults').length) {
+            $('#searchResults').fadeOut();
         }
-      }
     });
-  });
 
-  // 🧹 Hide suggestion box when clicking outside
-  $(document).on("click", function(e) {
-    if (!$(e.target).closest("#sug_input, #result").length) {
-      $("#result").fadeOut();
-    }
-  });
+    // 🧮 Update total when quantity changes
+    $(document).on('input', '.quantity-input', function () {
+        const qty = parseInt($(this).val()) || 0;
+        const price = parseFloat($(this).closest('tr').find('.unit-price').text()) || 0;
+        $(this).closest('tr').find('.total').text((qty * price).toFixed(2));
+    });
 });
 </script>
-@endsection

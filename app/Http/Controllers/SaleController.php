@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Sale;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SaleController extends Controller
 {
@@ -24,6 +26,16 @@ class SaleController extends Controller
     public function create()
     {
         return view('sales.partials.add_modal');
+    }
+
+    /**
+     * ✏️ Load Edit Sale modal content
+     */
+    public function edit($id)
+    {
+        $sale = Sale::with('product')->findOrFail($id);
+        $products = Product::orderBy('name', 'asc')->get();
+        return view('sales.partials.edit_modal', compact('sale', 'products'));
     }
 
     /**
@@ -57,60 +69,135 @@ class SaleController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity'   => 'required|integer|min:1',
         ]);
 
-        $product = Product::find($request->product_id);
+        $product = Product::findOrFail($request->product_id);
 
-        // ⚠️ Prevent selling more than in stock
+        // ⚠️ Prevent overselling
         if ($product->quantity < $request->quantity) {
             return response()->json([
                 'success' => false,
-                'error' => 'Not enough stock available.'
+                'error'   => 'Not enough stock available.'
             ]);
         }
 
+        $adminName = Auth::user()->name ?? 'System Admin';
+        $saleDate = Carbon::now('Asia/Manila');
         $total = $product->sale_price * $request->quantity;
 
-        // ✅ Save sale
-        $sale = Sale::create([
-            'product_id' => $product->id,
-            'qty' => $request->quantity,
-            'price' => $total,
-            'date' => Carbon::now()->toDateString(),
-        ]);
+        DB::beginTransaction();
+        try {
+            // Create sale
+            $sale = Sale::create([
+                'product_id' => $product->id,
+                'qty'        => $request->quantity,
+                'price'      => $total,
+                'date'       => $saleDate,
+                'admin_name' => $adminName,
+            ]);
 
-        // ✅ Deduct stock
-        $product->decrement('quantity', $request->quantity);
+            // Deduct stock
+            $product->decrement('quantity', $request->quantity);
 
-        return response()->json([
-            'success' => true,
-            'message' => '✅ Sale successfully added!',
-            'sale' => [
-                'item' => $product->name,
-                'price' => $product->sale_price,
-                'qty' => $request->quantity,
-                'total' => $total,
-                'date' => now()->format('Y-m-d'),
-            ]
-        ]);
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => '✅ Sale successfully added!',
+                'sale'    => [
+                    'item'  => $product->name,
+                    'price' => $product->sale_price,
+                    'qty'   => $request->quantity,
+                    'total' => $total,
+                    'date'  => $sale->date->format('Y-m-d H:i:s'),
+                    'admin' => $adminName,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'error'   => '⚠️ Failed to add sale. Please try again.',
+            ]);
+        }
     }
 
     /**
-     * 🗑 Delete a sale (optional)
+     * ♻️ Update sale (AJAX)
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'qty'        => 'required|integer|min:1',
+            'price'      => 'required|numeric|min:0',
+            'date'       => 'required|date',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $sale = Sale::findOrFail($id);
+            $oldQty = $sale->qty;
+            $product = Product::findOrFail($sale->product_id);
+
+            // Restore old stock first
+            $product->increment('quantity', $oldQty);
+
+            // Get new product (in case changed)
+            $newProduct = Product::findOrFail($request->product_id);
+
+            // Check stock availability for new quantity
+            if ($newProduct->quantity < $request->qty) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Not enough stock for the selected product.',
+                ]);
+            }
+
+            // Update sale record
+            $sale->update([
+                'product_id' => $newProduct->id,
+                'qty' => $request->qty,
+                'price' => $request->price,
+                'date' => Carbon::parse($request->date),
+                'admin_name' => Auth::user()->name ?? 'System Admin',
+            ]);
+
+            // Deduct new stock
+            $newProduct->decrement('quantity', $request->qty);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => '✅ Sale updated successfully!',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'error' => '⚠️ Failed to update sale. Please try again.',
+            ]);
+        }
+    }
+
+    /**
+     * 🗑 Delete a sale
      */
     public function destroy($id)
     {
         $sale = Sale::findOrFail($id);
         $product = $sale->product;
 
-        // ✅ Return stock when sale deleted
         if ($product) {
             $product->increment('quantity', $sale->qty);
         }
 
         $sale->delete();
 
-        return redirect()->route('sales.index')->with('success', 'Sale deleted successfully.');
+        return redirect()->route('sales.index')
+            ->with('success', 'Sale deleted successfully.');
     }
 }

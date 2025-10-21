@@ -65,10 +65,14 @@ class DashboardController extends Controller
 
     $today = Carbon::today();
 
-    $dailySales = Sale::whereDate('date', $today)->sum('price');
-    $weeklySales = Sale::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-        ->sum('price');
-    $monthlySales = Sale::whereMonth('date', Carbon::now()->month)->sum('price');
+   $dailySales = Sale::whereDate('date', $today)
+    ->sum(\DB::raw('price * quantity'));
+
+$weeklySales = Sale::whereBetween('date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+    ->sum(\DB::raw('price * quantity'));
+
+$monthlySales = Sale::whereMonth('date', Carbon::now()->month)
+    ->sum(\DB::raw('price * quantity'));
 
     return view('dashboard.user', compact(
         'recentSales',
