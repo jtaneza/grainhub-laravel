@@ -70,7 +70,7 @@ $(document).ready(function () {
         const stock = parseInt($(this).data('stock'));
         $('#searchResults').hide();
 
-        const cashier = '{{ Auth::user()->name }}';
+        const admin = '{{ Auth::user()->name }}';
 
         const html = `
             <tr>
@@ -83,7 +83,7 @@ $(document).ready(function () {
                     <input type="number" name="quantity" value="1" min="1" max="${stock}" class="form-control quantity-input text-center" style="width:80px;">
                 </td>
                 <td class="text-center">₱<span class="total">${price.toFixed(2)}</span></td>
-                <td class="text-center">${cashier}</td>
+                <td class="text-center">${admin}</td>
                 <td class="text-center">—</td>
                 <td class="text-center">
                     <button type="button" class="btn btn-success btn-sm btn-add-sale">
