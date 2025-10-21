@@ -3,7 +3,10 @@
 @section('content')
 <div class="row">
   <div class="col-md-12">
-    <h3>All Products</h3>
+     </strong>
+    <h3><i class="glyphicon glyphicon-th"></i>
+                        All Products</h3>
+                        </strong>
     <hr>
   </div>
 
