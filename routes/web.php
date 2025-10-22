@@ -12,18 +12,19 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MediaController;
-
+use App\Http\Controllers\DailySalesController;
+use App\Http\Controllers\MonthlySalesController;
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware('guest')->group(function () {
+    Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])
+    Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
 
@@ -32,7 +33,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
 | Protected Routes (Require Login)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
 
     // ✅ Admin Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -58,22 +59,34 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class)->except(['show']);
     Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])->name('users.updatePassword');
 
-    /*
-    |--------------------------------------------------------------------------
-    | 🧾 Reports
-    |--------------------------------------------------------------------------
-    */
-        Route::prefix('reports')->group(function () {
-        // View Reports
-        Route::get('/daily', [ReportController::class, 'daily'])->name('reports.daily');
-        Route::get('/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
-        Route::get('/by-dates', [ReportController::class, 'byDates'])->name('reports.byDates');
-        
-        // Download Reports
-        Route::get('/download/daily', [ReportController::class, 'downloadDaily'])->name('reports.download.daily');
-        Route::get('/download/weekly', [ReportController::class, 'downloadWeekly'])->name('reports.download.weekly');
-        Route::get('/download/monthly', [ReportController::class, 'downloadMonthly'])->name('reports.download.monthly');
-    });
+   /*
+|--------------------------------------------------------------------------  
+| 🧾 Reports  
+|--------------------------------------------------------------------------  
+*/
+Route::prefix('reports')->group(function () {
+    // View Reports
+    Route::get('/daily', [ReportController::class, 'daily'])->name('reports.daily');
+    Route::get('/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
+    Route::get('/by-dates', [ReportController::class, 'byDates'])->name('reports.byDates');
+    
+    // Handle report generation by date range
+    Route::post('/by-dates', [ReportController::class, 'generateByDates'])->name('reports.byDates.generate');
+
+    // 🆕 Sales Report Page
+    Route::get('/sales-report', [ReportController::class, 'salesReport'])->name('reports.salesReport');
+    Route::post('/sales-report/filter', [ReportController::class, 'filterSalesReport'])->name('reports.salesReport.filter');
+    
+    // Download Reports
+    Route::get('daily/download/{month}/{year}', [ReportController::class, 'downloadDaily'])->name('reports.daily.download');
+    Route::get('monthly/download/{year}', [ReportController::class, 'downloadMonthly'])->name('reports.monthly.download');
+
+    Route::get('/daily-sales', [DailySalesController::class, 'index'])->name('sales.daily');
+    Route::get('/monthly-sales', [MonthlySalesController::class, 'index'])->name('sales.monthly');
+
+    Route::get('/by-dates/download/{start}/{end}', [ReportController::class, 'downloadByDates'])->name('reports.byDates.download');
+
+});
 
     /*
     |--------------------------------------------------------------------------
@@ -86,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('add-modal', [SaleController::class, 'create'])->name('add.modal');
     });
 
-    Route::resource('sales', SaleController::class);
+        Route::resource('sales', SaleController::class);
 
     /*
     |--------------------------------------------------------------------------
