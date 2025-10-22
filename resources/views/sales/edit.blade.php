@@ -16,7 +16,7 @@
         <div class="panel panel-default shadow-sm">
             {{-- ✅ Header --}}
             <div class="panel-heading clearfix bg-primary text-white p-2 rounded-top d-flex justify-content-between align-items-center">
-                <strong><span class="glyphicon glyphicon-th"></span> Edit Sales</strong>
+                <strong><span class="glyphicon glyphicon-th"></span> Edit Sale</strong>
             </div>
 
             {{-- ✅ Body --}}
