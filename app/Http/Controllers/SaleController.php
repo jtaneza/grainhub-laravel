@@ -84,19 +84,22 @@ class SaleController extends Controller
         }
 
         $adminName = Auth::user()->name ?? 'System Admin';
+        $adminId   = Auth::id() ?? null;
+
         // ✅ Include full datetime with timezone
         $saleDate = Carbon::now('Asia/Manila')->toDateTimeString();
         $total = $product->sale_price * $request->quantity;
 
         DB::beginTransaction();
         try {
-            // Create sale
+            // ✅ Create sale with admin_id
             $sale = Sale::create([
                 'product_id' => $product->id,
                 'qty'        => $request->quantity,
                 'price'      => $total,
                 'date'       => $saleDate,
                 'admin_name' => $adminName,
+                'admin_id'   => $adminId,
             ]);
 
             // Deduct stock
@@ -158,13 +161,14 @@ class SaleController extends Controller
             // ✅ Save date with time (not midnight)
             $formattedDate = Carbon::parse($request->date, 'Asia/Manila')->toDateTimeString();
 
-            // Update sale record
+            // ✅ Update sale record with admin_id
             $sale->update([
                 'product_id' => $newProduct->id,
                 'qty'        => $request->qty,
                 'price'      => $request->price,
                 'date'       => $formattedDate,
                 'admin_name' => Auth::user()->name ?? 'System Admin',
+                'admin_id'   => Auth::id() ?? null,
             ]);
 
             // Deduct new stock
@@ -172,7 +176,6 @@ class SaleController extends Controller
 
             DB::commit();
 
-            // ✅ Redirect back with success message
             return redirect()
                 ->route('sales.edit', $sale->id)
                 ->with('success', 'Sale updated successfully.');

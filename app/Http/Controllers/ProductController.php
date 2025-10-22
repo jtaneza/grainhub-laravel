@@ -57,7 +57,7 @@ class ProductController extends Controller
             'photo'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // ✅ Handle image upload (optional)
+        // Handle image upload
         $media_id = null;
         if ($request->hasFile('photo')) {
             $file     = $request->file('photo');
@@ -72,7 +72,7 @@ class ProductController extends Controller
             $media_id = $media->id;
         }
 
-        // ✅ Determine admin name (from logged-in user or fallback)
+        // Get admin name
         $adminName = Auth::check() ? Auth::user()->name : 'Unknown';
 
         Product::create([
@@ -84,7 +84,7 @@ class ProductController extends Controller
             'quantity'    => $validated['quantity'],
             'media_id'    => $media_id,
             'date'        => now('Asia/Manila'),
-            'admin_name'  => $adminName, // ✅ Save admin name
+            'admin_name'  => $adminName,
         ]);
 
         return redirect()
@@ -103,63 +103,80 @@ class ProductController extends Controller
         return view('products.edit', compact('product', 'categories', 'suppliers'));
     }
 
-   /**
- * Update the specified product in storage.
- */
-public function update(Request $request, Product $product)
-{
-    $validated = $request->validate([
-        'name'        => 'required|string|max:255',
-        'category_id' => 'required|integer|exists:categories,id',
-        'supplier_id' => 'nullable|integer|exists:suppliers,id',
-        'buy_price'   => 'required|numeric|min:0',
-        'sale_price'  => 'required|numeric|min:0',
-        'quantity'    => 'required|integer|min:0',
-        'photo'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
+    /**
+     * Update the specified product in storage.
+     */
+    public function update(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'category_id' => 'required|integer|exists:categories,id',
+            'supplier_id' => 'nullable|integer|exists:suppliers,id',
+            'buy_price'   => 'required|numeric|min:0',
+            'sale_price'  => 'required|numeric|min:0',
+            'quantity'    => 'required|integer|min:0',
+            'photo'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    // ✅ Keep old media ID by default
-    $validated['media_id'] = $product->media_id;
+        // Keep old media ID
+        $validated['media_id'] = $product->media_id;
 
-// ✅ Handle image replacement if new file is uploaded
-if ($request->hasFile('photo')) {
-    if ($product->media && file_exists(public_path('uploads/products/' . $product->media->file_name))) {
-        unlink(public_path('uploads/products/' . $product->media->file_name));
+        // Handle new image upload
+        if ($request->hasFile('photo')) {
+            if ($product->media && file_exists(public_path('uploads/products/' . $product->media->file_name))) {
+                unlink(public_path('uploads/products/' . $product->media->file_name));
+            }
+
+            $file     = $request->file('photo');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $fileSize = $file->getSize();
+            $fileType = $file->getClientMimeType();
+
+            $file->move(public_path('uploads/products'), $fileName);
+
+            $media = Media::create([
+                'file_name' => $fileName,
+                'file_type' => $fileType,
+                'size'      => $fileSize,
+            ]);
+
+            $validated['media_id'] = $media->id;
+        }
+
+        // Update admin name
+        $validated['admin_name'] = Auth::check() ? Auth::user()->name : 'Unknown';
+
+        // Save updates
+        $product->update($validated);
+
+        return redirect()
+            ->route('products.index')
+            ->with('success', '✅ Product updated successfully.');
     }
 
-    $file     = $request->file('photo');
-    $fileName = time() . '_' . $file->getClientOriginalName();
-    $fileSize = $file->getSize(); // ✅ Get size BEFORE moving
-    $fileType = $file->getClientMimeType();
-
-    $file->move(public_path('uploads/products'), $fileName);
-
-    $media = Media::create([
-        'file_name' => $fileName,
-        'file_type' => $fileType,
-        'size'      => $fileSize,
-    ]);
-
-    $validated['media_id'] = $media->id;
-}
-
-    // 👤 Update admin name when updated
-    $validated['admin_name'] = Auth::check() ? Auth::user()->name : 'Unknown';
-
-    // ✅ Save updates
-    $product->update($validated);
-
-    return redirect()
-        ->route('products.index')
-        ->with('success', '✅ Product updated successfully.');
-}
-
-
     /**
-     * Redirect show() to edit view
+     * Redirect show() to edit view.
      */
     public function show(Product $product)
     {
         return redirect()->route('products.edit', $product->id);
+    }
+
+    /**
+     * Remove the specified product from storage.
+     */
+    public function destroy(Product $product)
+    {
+        // Delete associated media
+        if ($product->media && file_exists(public_path('uploads/products/' . $product->media->file_name))) {
+            unlink(public_path('uploads/products/' . $product->media->file_name));
+            $product->media->delete();
+        }
+
+        $product->delete();
+
+        return redirect()
+            ->route('products.index')
+            ->with('success', '✅ Product deleted successfully.');
     }
 }

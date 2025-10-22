@@ -117,9 +117,10 @@
                     <i class="glyphicon glyphicon-duplicate"></i> <span>Sales Reports</span>
                 </a>
                 <ul class="submenu">
+                    <li><a href="{{ route('reports.byDates') }}">Sales by Dates</a></li>
                     <li><a href="{{ route('reports.daily') }}">Daily Sales</a></li>
-                    <li><a href="#">Monthly Sales</a></li>
-                    <li><a href="#">Sales by Dates</a></li>
+                    <li><a href="{{ route('reports.monthly') }}">Monthly Sales</a></li>
+                    
                 </ul>
             </li>
         </ul>
