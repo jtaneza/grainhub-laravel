@@ -2,150 +2,119 @@
 @section('title', 'Edit Sale')
 
 @section('content')
-<div class="modal-dialog modal-lg" style="margin: 50px auto;">
-    <div class="modal-content shadow-sm">
+<div class="row">
+    <div class="col-md-12">
 
-        {{-- 🔹 Modal Header (Same as Add Sale) --}}
-        <div class="modal-header">
-            <h4 class="modal-title">Edit Sale</h4>
-            <a href="{{ route('sales.index') }}" class="close" aria-label="Close">&times;</a>
-        </div>
+        {{-- ✅ Success Message --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade in">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+                <strong><i class="glyphicon glyphicon-ok"></i></strong> {{ session('success') }}
+            </div>
+        @endif
 
-        {{-- 🔹 Modal Body --}}
-        <div class="modal-body">
-            <div class="form-group">
-                <input type="text" id="searchProduct" class="form-control" placeholder="Search for product name...">
-                <div id="searchResults" class="list-group" style="position:absolute; z-index:1000; width:95%; display:none;"></div>
+        <div class="panel panel-default shadow-sm">
+            {{-- ✅ Header --}}
+            <div class="panel-heading clearfix bg-primary text-white p-2 rounded-top d-flex justify-content-between align-items-center">
+                <strong><span class="glyphicon glyphicon-th"></span> Edit Sales</strong>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <strong><span class="glyphicon glyphicon-th"></span> Edit Sale Entry</strong>
-                </div>
+            {{-- ✅ Body --}}
+            <div class="panel-body bg-light">
+                <form action="{{ route('sales.update', $sale->id) }}" method="POST" id="editSaleForm">
+                    @csrf
+                    @method('PUT')
 
-                <div class="panel-body">
-                    <form id="editSaleForm" action="{{ route('sales.update', $sale->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
+                    <table class="table table-bordered table-striped align-middle mb-0">
+                        <thead class="bg-primary text-white text-center">
+                            <tr>
+                                <th>Product title</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {{-- Product --}}
+                                <td style="width: 25%;">
+                                    <select name="product_id" class="form-control input-sm" required>
+                                        <option value="">-- Select Product --</option>
+                                        @foreach($products as $product)
+                                            <option value="{{ $product->id }}" {{ $sale->product_id == $product->id ? 'selected' : '' }}>
+                                                {{ $product->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
 
-                        <table class="table table-bordered align-middle">
-                            <thead>
-                                <tr class="text-center">
-                                    <th>Item</th>
-                                    <th>Price</th>
-                                    <th>Qty</th>
-                                    <th>Total</th>
-                                    <th>Admin</th>
-                                    <th>Date/Time</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="productInfo">
-                                <tr>
-                                    {{-- Product Dropdown --}}
-                                    <td>
-                                        <select name="product_id" id="product_id" class="form-control" required>
-                                            @foreach ($products as $product)
-                                                <option value="{{ $product->id }}" 
-                                                    {{ $sale->product_id == $product->id ? 'selected' : '' }}>
-                                                    {{ $product->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
+                                {{-- Quantity --}}
+                                <td style="width: 10%;">
+                                    <input type="number" name="qty" id="qty" class="form-control input-sm text-center"
+                                           value="{{ $sale->qty }}" min="1" required>
+                                </td>
 
-                                    {{-- Price --}}
-                                    <td class="text-center">
-                                        ₱<input type="number" step="0.01" name="price" id="price"
-                                            class="form-control text-center d-inline-block"
-                                            value="{{ $sale->price }}" required style="width:100px;">
-                                    </td>
+                                {{-- Price --}}
+                                <td style="width: 15%;">
+                                    <input type="number" name="price" id="price" class="form-control input-sm text-center"
+                                           value="{{ $sale->price }}" step="0.01" required>
+                                </td>
 
-                                    {{-- Quantity --}}
-                                    <td class="text-center">
-                                        <input type="number" name="qty" id="qty"
-                                            class="form-control text-center"
-                                            value="{{ $sale->qty }}" min="1" required style="width:80px;">
-                                    </td>
+                                {{-- Total (auto-calculated) --}}
+                                <td style="width: 15%;">
+                                    <input type="text" id="total" class="form-control input-sm text-center bg-light"
+                                           value="{{ number_format($sale->qty * $sale->price, 2) }}" readonly>
+                                </td>
 
-                                    {{-- Total (auto-calculated) --}}
-                                    <td class="text-center align-middle">
-                                        ₱<span id="computedTotal">{{ number_format($sale->qty * $sale->price, 2) }}</span>
-                                    </td>
+                                {{-- Date --}}
+                                <td style="width: 20%;">
+                                    <input type="date" name="date" class="form-control input-sm text-center"
+                                           value="{{ \Carbon\Carbon::parse($sale->date)->format('Y-m-d') }}" required>
+                                </td>
 
-                                    {{-- Admin --}}
-                                    <td class="text-center align-middle">
-                                        {{ $sale->admin_name ?? Auth::user()->name }}
-                                    </td>
+                                {{-- Action --}}
+                                <td class="text-center" style="width: 15%;">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="glyphicon glyphicon-save"></i> Update sale
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                                    {{-- Date & Time --}}
-                                    <td class="text-center">
-                                        <input type="datetime-local" name="date" id="date"
-                                            class="form-control text-center"
-                                            value="{{ \Carbon\Carbon::parse($sale->date)->format('Y-m-d\TH:i') }}"
-                                            required>
-                                    </td>
+                    {{-- ✅ Admin field --}}
+                   <div class="mt-3">
+    <label class="fw-bold me-2">Admin:</label>
+    <input type="text" 
+           class="form-control d-inline-block bg-light text-center" 
+           style="width: 200px;" 
+           value="{{ Auth::user()->name }}" 
+           readonly>
+</div>
 
-                                    {{-- Save --}}
-                                    <td class="text-center align-middle">
-                                        <button type="submit" class="btn btn-success btn-sm">
-                                            <i class="glyphicon glyphicon-floppy-disk"></i> Save
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
-
     </div>
 </div>
 
-{{-- 🔹 Auto-update total dynamically (same as Add Sale) --}}
+{{-- ✅ Auto-update total calculation --}}
 <script>
-$(document).ready(function () {
-    $('#qty, #price').on('input', function () {
-        const qty = parseFloat($('#qty').val()) || 0;
-        const price = parseFloat($('#price').val()) || 0;
-        $('#computedTotal').text((qty * price).toFixed(2));
-    });
+document.addEventListener("DOMContentLoaded", function () {
+    const qty = document.getElementById('qty');
+    const price = document.getElementById('price');
+    const total = document.getElementById('total');
 
-    // Optional: live product search like Add Sale
-    $('#searchProduct').on('keyup', function () {
-        const query = $(this).val().trim();
-        if (!query) return $('#searchResults').hide();
+    function updateTotal() {
+        const q = parseFloat(qty.value) || 0;
+        const p = parseFloat(price.value) || 0;
+        total.value = (q * p).toFixed(2);
+    }
 
-        $.get("{{ route('sales.search') }}", { query }, function (data) {
-            let html = '';
-            data.forEach(item => {
-                html += `<a href="#" class="list-group-item suggestion-item"
-                    data-id="${item.id}" data-name="${item.name}" data-price="${item.sale_price}">
-                    ${item.name} — ₱${item.sale_price}
-                </a>`;
-            });
-            $('#searchResults').html(html).fadeIn();
-        });
-    });
-
-    $(document).on('click', '.suggestion-item', function (e) {
-        e.preventDefault();
-        const id = $(this).data('id');
-        const name = $(this).data('name');
-        const price = parseFloat($(this).data('price'));
-        $('#searchResults').hide();
-
-        $('#product_id').val(id);
-        $('#price').val(price);
-        $('#computedTotal').text((parseFloat($('#qty').val()) * price).toFixed(2));
-    });
-
-    $(document).on('click', function (e) {
-        if (!$(e.target).closest('#searchProduct, #searchResults').length) {
-            $('#searchResults').fadeOut();
-        }
-    });
+    qty.addEventListener('input', updateTotal);
+    price.addEventListener('input', updateTotal);
 });
 </script>
 @endsection

@@ -1,4 +1,4 @@
-@extends('layouts.app') 
+@extends('layouts.app')
 @section('title', 'All Sales')
 
 @section('content')
@@ -47,11 +47,11 @@
                         @foreach($sortedSales as $index => $sale)
                             @php
                                 if ($index < $count * 0.33) {
-                                    $rowColor = '#d4edda'; 
+                                    $rowColor = '#d4edda';
                                 } elseif ($index < $count * 0.66) {
-                                    $rowColor = '#fff3cd'; 
+                                    $rowColor = '#fff3cd';
                                 } else {
-                                    $rowColor = '#f8d7da'; 
+                                    $rowColor = '#f8d7da';
                                 }
                             @endphp
 
@@ -65,15 +65,7 @@
                                 <td class="text-center">{{ \Carbon\Carbon::parse($sale->date)->format('Y-m-d h:i A') }}</td>
 
                                 <td class="text-center">
-                  <a href="javascript:void(0)" 
-   class="btn btn-warning btn-xs btn-edit-sale"
-   data-sale="{{ json_encode([
-        'id' => $sale->id,
-        'product_id' => $sale->product_id,
-        'qty' => $sale->qty,
-        'price' => $sale->price,
-        'date' => \Carbon\Carbon::parse($sale->date)->format('Y-m-d\TH:i'),
-   ], JSON_HEX_APOS | JSON_HEX_QUOT) }}">
+                                    <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-warning btn-xs" title="Edit Sale">
     <span class="glyphicon glyphicon-edit"></span>
 </a>
 
@@ -136,6 +128,12 @@
           </div>
 
           <div class="mb-2">
+            <label class="form-label">Admin</label>
+            <input type="text" name="admin_name" id="edit_admin" class="form-control form-control-sm bg-light" 
+                   value="{{ Auth::user()->name }}" readonly>
+          </div>
+
+          <div class="mb-2">
             <label class="form-label">Date</label>
             <input type="datetime-local" name="date" id="edit_date" class="form-control form-control-sm" required>
           </div>
@@ -149,7 +147,9 @@
     </div>
   </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
 $(document).ready(function () {
     // ➕ Add Sale
@@ -193,6 +193,7 @@ $(document).ready(function () {
         $('#edit_qty').val(sale.qty);
         $('#edit_price').val(sale.price);
         $('#edit_date').val(sale.date);
+        $('#edit_admin').val('{{ Auth::user()->name }}');
         $('#editSaleModal').modal('show');
     });
 
@@ -211,17 +212,17 @@ $(document).ready(function () {
             },
             success: function (data) {
                 if (data.success) {
-                    alert(data.message);
+                    alert(`✅ Sale updated successfully by ${data.sale.admin_name}`);
                     location.reload();
                 } else {
                     alert(data.error || 'Something went wrong.');
                 }
             },
             error: function () {
-                alert('Error updating sale.');
+                alert('⚠️ Error updating sale.');
             }
         });
     });
 });
 </script>
-@endsection
+@endpush

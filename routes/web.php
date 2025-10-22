@@ -63,14 +63,24 @@ Route::middleware(['auth'])->group(function () {
     | 🧾 Reports
     |--------------------------------------------------------------------------
     */
-    Route::get('reports/daily', [ReportController::class, 'daily'])->name('reports.daily');
+        Route::prefix('reports')->group(function () {
+        // View Reports
+        Route::get('/daily', [ReportController::class, 'daily'])->name('reports.daily');
+        Route::get('/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
+        Route::get('/by-dates', [ReportController::class, 'byDates'])->name('reports.byDates');
+        
+        // Download Reports
+        Route::get('/download/daily', [ReportController::class, 'downloadDaily'])->name('reports.download.daily');
+        Route::get('/download/weekly', [ReportController::class, 'downloadWeekly'])->name('reports.download.weekly');
+        Route::get('/download/monthly', [ReportController::class, 'downloadMonthly'])->name('reports.download.monthly');
+    });
 
     /*
     |--------------------------------------------------------------------------
     | 💵 Sales Routes (AJAX + CRUD)
     |--------------------------------------------------------------------------
     */
-    Route::prefix('sales')->name('sales.')->group(function () {
+        Route::prefix('sales')->name('sales.')->group(function () {
         Route::get('search', [SaleController::class, 'search'])->name('search');
         Route::get('product', [SaleController::class, 'getProduct'])->name('product');
         Route::get('add-modal', [SaleController::class, 'create'])->name('add.modal');

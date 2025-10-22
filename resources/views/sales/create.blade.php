@@ -58,40 +58,41 @@ $(document).ready(function () {
         });
     });
 
-    // 🖱 Select a product from suggestions
-    $(document).on('click', '.suggestion-item', function (e) {
-        e.preventDefault();
-        const id = $(this).data('id');
-        const name = $(this).data('name');
-        const price = parseFloat($(this).data('price'));
-        const stock = parseInt($(this).data('stock'));
-        $('#searchResults').hide();
+// 🖱 Select a product from suggestions
+$(document).on('click', '.suggestion-item', function (e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    const name = $(this).data('name');
+    const price = parseFloat($(this).data('price'));
+    const stock = parseInt($(this).data('stock'));
+    $('#searchResults').hide();
 
-        const admin = '{{ Auth::user()->name }}';
+    const admin = '{{ Auth::user()->name }}';
+    const currentDateTime = new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' });
 
-        const html = `
-            <tr>
-                <td>
-                    <strong>${name}</strong>
-                    <input type="hidden" name="product_id" value="${id}">
-                </td>
-                <td class="text-center">₱<span class="unit-price">${price.toFixed(2)}</span></td>
-                <td class="text-center">
-                    <input type="number" name="quantity" value="1" min="1" max="${stock}" class="form-control quantity-input text-center" style="width:80px;">
-                </td>
-                <td class="text-center">₱<span class="total">${price.toFixed(2)}</span></td>
-                <td class="text-center">${admin}</td>
-                <td class="text-center">—</td> <!-- Server will handle date -->
-                <td class="text-center">
-                    <button type="button" class="btn btn-success btn-sm btn-add-sale">
-                        <i class="glyphicon glyphicon-plus"></i> Add
-                    </button>
-                </td>
-            </tr>
-        `;
+    const html = `
+        <tr>
+            <td>
+                <strong>${name}</strong>
+                <input type="hidden" name="product_id" value="${id}">
+            </td>
+            <td class="text-center">₱<span class="unit-price">${price.toFixed(2)}</span></td>
+            <td class="text-center">
+                <input type="number" name="quantity" value="1" min="1" max="${stock}" class="form-control quantity-input text-center" style="width:80px;">
+            </td>
+            <td class="text-center">₱<span class="total">${price.toFixed(2)}</span></td>
+            <td class="text-center">${admin}</td>
+            <td class="text-center">${currentDateTime}</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-success btn-sm btn-add-sale">
+                    <i class="glyphicon glyphicon-plus"></i> Add
+                </button>
+            </td>
+        </tr>
+    `;
 
-        $('#productInfo').html(html);
-    });
+    $('#productInfo').html(html);
+});
 
     // 💾 Add Sale AJAX
     $(document).on('click', '.btn-add-sale', function () {

@@ -154,6 +154,7 @@
             setInterval(updateDateTime, 60000); // update every 1 minute
         });
     </script>
+@stack('scripts')
 
 </body>
 </html>

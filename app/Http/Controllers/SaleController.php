@@ -29,13 +29,14 @@ class SaleController extends Controller
     }
 
     /**
-     * ✏️ Load Edit Sale modal content
+     * ✏️ Load Edit Sale (non-popup)
      */
     public function edit($id)
     {
         $sale = Sale::with('product')->findOrFail($id);
         $products = Product::orderBy('name', 'asc')->get();
-        return view('sales.partials.edit_modal', compact('sale', 'products'));
+
+        return view('sales.edit', compact('sale', 'products'));
     }
 
     /**
@@ -53,7 +54,7 @@ class SaleController extends Controller
     }
 
     /**
-     * 🧩 Get selected product info (for row)
+     * 🧩 Get selected product info (for add modal row)
      */
     public function getProduct(Request $request)
     {
@@ -78,12 +79,13 @@ class SaleController extends Controller
         if ($product->quantity < $request->quantity) {
             return response()->json([
                 'success' => false,
-                'error'   => 'Not enough stock available.'
+                'error'   => 'Not enough stock available.',
             ]);
         }
 
         $adminName = Auth::user()->name ?? 'System Admin';
-        $saleDate = Carbon::now('Asia/Manila');
+        // ✅ Include full datetime with timezone
+        $saleDate = Carbon::now('Asia/Manila')->toDateTimeString();
         $total = $product->sale_price * $request->quantity;
 
         DB::beginTransaction();
@@ -110,7 +112,7 @@ class SaleController extends Controller
                     'price' => $product->sale_price,
                     'qty'   => $request->quantity,
                     'total' => $total,
-                    'date'  => $sale->date->format('Y-m-d H:i:s'),
+                    'date'  => $saleDate,
                     'admin' => $adminName,
                 ],
             ]);
@@ -124,7 +126,7 @@ class SaleController extends Controller
     }
 
     /**
-     * ♻️ Update sale (AJAX)
+     * ♻️ Update sale (Form submission, not AJAX)
      */
     public function update(Request $request, $id)
     {
@@ -141,27 +143,27 @@ class SaleController extends Controller
             $oldQty = $sale->qty;
             $product = Product::findOrFail($sale->product_id);
 
-            // Restore old stock first
+            // Restore old stock
             $product->increment('quantity', $oldQty);
 
-            // Get new product (in case changed)
+            // Check new product (in case changed)
             $newProduct = Product::findOrFail($request->product_id);
 
-            // Check stock availability for new quantity
+            // Check stock availability
             if ($newProduct->quantity < $request->qty) {
                 DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Not enough stock for the selected product.',
-                ]);
+                return back()->with('error', 'Not enough stock for the selected product.');
             }
+
+            // ✅ Save date with time (not midnight)
+            $formattedDate = Carbon::parse($request->date, 'Asia/Manila')->toDateTimeString();
 
             // Update sale record
             $sale->update([
                 'product_id' => $newProduct->id,
-                'qty' => $request->qty,
-                'price' => $request->price,
-                'date' => Carbon::parse($request->date),
+                'qty'        => $request->qty,
+                'price'      => $request->price,
+                'date'       => $formattedDate,
                 'admin_name' => Auth::user()->name ?? 'System Admin',
             ]);
 
@@ -170,16 +172,14 @@ class SaleController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => '✅ Sale updated successfully!',
-            ]);
+            // ✅ Redirect back with success message
+            return redirect()
+                ->route('sales.edit', $sale->id)
+                ->with('success', 'Sale updated successfully.');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'error' => '⚠️ Failed to update sale. Please try again.',
-            ]);
+            return back()->with('error', '⚠️ Failed to update sale. Please try again.');
         }
     }
 

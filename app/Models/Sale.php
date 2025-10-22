@@ -13,7 +13,6 @@ class Sale extends Model
     protected $table = 'sales';
     public $timestamps = false;
 
-    // Include admin name + time tracking
     protected $fillable = [
         'product_id',
         'qty',
@@ -22,13 +21,17 @@ class Sale extends Model
         'admin_name',
     ];
 
-    /**
-     * Automatically cast 'date' as Carbon instance for easy formatting.
-     */
     protected $casts = [
-    'date' => 'datetime',
-];
+        'date' => 'datetime:Y-m-d H:i:s',
+    ];
 
+    /**
+     * Automatically set Manila timezone when retrieving the date.
+     */
+    public function getDateAttribute($value)
+    {
+        return Carbon::parse($value)->timezone('Asia/Manila');
+    }
 
     /**
      * Each sale belongs to one product.
@@ -39,7 +42,7 @@ class Sale extends Model
     }
 
     /**
-     * Format the sale date/time when displayed in 24-hour format.
+     * Format the sale date/time nicely.
      */
     public function getFormattedDateAttribute()
     {
@@ -47,7 +50,7 @@ class Sale extends Model
     }
 
     /**
-     * Convenient accessor to get cashier name with fallback.
+     * Get cashier/admin name with fallback.
      */
     public function getCashierNameAttribute()
     {
@@ -55,13 +58,13 @@ class Sale extends Model
     }
 
     /**
-     * Combined accessor for display in tables.
+     * Combined display info accessor.
      */
     public function getDisplayInfoAttribute()
     {
         return [
-            'admin' => $this->admin_name,
-            'date'    => $this->formatted_date,
+            'admin' => $this->cashier_name,
+            'date'  => $this->formatted_date,
         ];
     }
 }
