@@ -25,9 +25,8 @@
 <div class="report-wrapper">
   <div class="report-card card">
     <div class="card-header">
-      <i class="bi bi-clipboard-data"></i> Generate Sales Report
-    </div>
-
+            <strong><span class="glyphicon glyphicon-th"></span> Generate Sales Report</strong>
+        </div>
     <div class="card-body">
       <form method="POST" action="{{ route('reports.byDates.generate') }}">
         @csrf

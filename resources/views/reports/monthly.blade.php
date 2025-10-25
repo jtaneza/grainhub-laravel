@@ -4,7 +4,7 @@
 @section('content')
 <div class="panel panel-default">
   <div class="panel-heading">
-    <strong>Monthly Sales</strong>
+    <strong><span class="glyphicon glyphicon-th"></span> Monthly Sales Report</strong>
   </div>
   <div class="panel-body">
     @if($sales->count())
