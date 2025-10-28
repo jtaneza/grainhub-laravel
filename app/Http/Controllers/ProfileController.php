@@ -35,17 +35,14 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // ✅ Validate photo only
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // ✅ Delete old image if exists
         if ($user->image && Storage::disk('public')->exists($user->image)) {
             Storage::disk('public')->delete($user->image);
         }
 
-        // ✅ Store new image
         $path = $request->file('image')->store('uploads/users', 'public');
         $user->image = $path;
         $user->save();
@@ -68,6 +65,36 @@ class ProfileController extends Controller
         $user->update($validated);
 
         return redirect()->route('profile.edit')->with('success', 'Account information updated successfully!');
+    }
+
+    /**
+     * 🆕 Combined update method for both info and photo
+     */
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // ✅ Handle image update if provided
+        if ($request->hasFile('image')) {
+            if ($user->image && Storage::disk('public')->exists($user->image)) {
+                Storage::disk('public')->delete($user->image);
+            }
+
+            $path = $request->file('image')->store('uploads/users', 'public');
+            $user->image = $path;
+        }
+
+        $user->name = $validated['name'];
+        $user->username = $validated['username'];
+        $user->save();
+
+        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
     }
 
     /**

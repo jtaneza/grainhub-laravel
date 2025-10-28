@@ -1,83 +1,58 @@
 @extends('layouts.app')
-@section('title', 'Edit Profile')
+@section('title', 'My Profile')
 
 @section('content')
 <div class="row">
+
   {{-- LEFT: Profile Picture --}}
   <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading bg-light">
-        <strong><i class="glyphicon glyphicon-camera"></i> CHANGE MY PHOTO</strong>
+        <strong><i class="glyphicon glyphicon-camera"></i> MY PHOTO</strong>
       </div>
       <div class="panel-body text-center">
-        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-          @csrf
-          @method('PUT')
-          
-          <img 
-            id="preview"
-            src="{{ $user->image ? asset('storage/'.$user->image) : asset('uploads/users/default.png') }}" 
-            alt="Profile Photo"
-            class="img-circle"
-            style="width:120px; height:120px; object-fit:cover; margin-bottom:10px;"
-          >
-          
-          <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(event)" style="margin-bottom:10px;">
-          <button type="submit" class="btn btn-warning">Change</button>
-        </form>
+        <img 
+          src="{{ $user->image ? asset('storage/'.$user->image) : asset('uploads/users/default.png') }}" 
+          alt="Profile Photo"
+          class="img-circle"
+          style="width:120px; height:120px; object-fit:cover; margin-bottom:10px;"
+        >
+        <br>
+        <a href="{{ route('profile.edit') }}" class="btn btn-warning">Change Photo</a>
       </div>
     </div>
   </div>
 
-  {{-- RIGHT: Edit Info --}}
+  {{-- RIGHT: Account Information --}}
   <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading bg-light">
-        <strong><i class="glyphicon glyphicon-edit"></i> EDIT MY ACCOUNT</strong>
+        <strong><i class="glyphicon glyphicon-user"></i> MY ACCOUNT</strong>
       </div>
       <div class="panel-body">
-        @if ($errors->any())
-          <div class="alert alert-danger">
-            <ul style="margin:0;">
-              @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-        @endif
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" class="form-control" value="{{ $user->name }}" readonly>
+        </div>
 
-        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-          @csrf
-          @method('PUT')
-          <div class="form-group">
-            <label>Name</label>
-            <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
-          </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" class="form-control" value="{{ $user->username }}" readonly>
+        </div>
 
-          <div class="form-group">
-            <label>Username</label>
-            <input type="text" name="username" class="form-control" value="{{ old('username', $user->username) }}" required>
-          </div>
+        <div class="form-group">
+          <label>Role</label>
+          <input type="text" class="form-control" 
+                 value="@if($user->user_level == 1) Administrator 
+                        @elseif($user->user_level == 2) Special User 
+                        @else User 
+                        @endif" readonly>
+        </div>
 
-          <button type="submit" class="btn btn-info">Update</button>
-          <a href="{{ route('profile.show') }}" class="btn btn-default">Cancel</a>
-          <a href="#" class="btn btn-danger pull-right">Change Password</a>
-        </form>
+        <a href="{{ route('profile.edit') }}" class="btn btn-info">Edit Account</a>
+        <a href="{{ route('profile.password.edit') }}" class="btn btn-danger pull-right">Change Password</a>
       </div>
     </div>
   </div>
 </div>
-
-{{-- Preview Image Script --}}
-@push('scripts')
-<script>
-  function previewImage(event) {
-    const reader = new FileReader();
-    reader.onload = function(){
-      document.getElementById('preview').src = reader.result;
-    }
-    reader.readAsDataURL(event.target.files[0]);
-  }
-</script>
-@endpush
 @endsection

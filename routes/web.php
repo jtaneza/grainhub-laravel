@@ -116,6 +116,7 @@ use App\Http\Controllers\ProfileController;
     // PROFILE
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 // SEPARATE ACTIONS
 Route::put('/profile/update-info', [ProfileController::class, 'updateInfo'])->name('profile.update.info');

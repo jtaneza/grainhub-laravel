@@ -6,10 +6,9 @@
 
   {{-- LEFT PANEL - Change Photo --}}
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading clearfix">
-        <span class="glyphicon glyphicon-camera"></span>
-        <span>Change My Photo</span>
+    <div class="panel panel-default shadow-sm">
+      <div class="panel-heading clearfix" style="border-bottom:3px solid orange;">
+        <strong><span class="glyphicon glyphicon-camera"></span> CHANGE MY PHOTO</strong>
       </div>
       <div class="panel-body text-center">
         {{-- ✅ Success Message --}}
@@ -23,15 +22,22 @@
 
           <img 
             id="preview"
-            class="img-circle img-size-2"
+            class="img-circle"
             src="{{ $user->image ? asset('storage/'.$user->image) : asset('uploads/users/default.png') }}" 
             alt="Profile Picture"
-            style="width:120px; height:120px; object-fit:cover; margin-bottom:10px;"
+            style="width:120px; height:120px; object-fit:cover; border-radius:50%; margin-bottom:15px;"
           >
 
-          <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(event)">
-          <br>
-          <button type="submit" class="btn btn-warning">Change</button>
+          <input 
+            type="file" 
+            name="image" 
+            class="form-control" 
+            accept="image/*" 
+            onchange="previewImage(event)"
+            style="max-width:350px; margin:10px auto;"
+          >
+
+          <button type="submit" class="btn btn-warning" style="margin-top:10px;">Change</button>
         </form>
       </div>
     </div>
@@ -39,10 +45,9 @@
 
   {{-- RIGHT PANEL - Edit Info --}}
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading clearfix">
-        <span class="glyphicon glyphicon-edit"></span>
-        <span>Edit My Account</span>
+    <div class="panel panel-default shadow-sm">
+      <div class="panel-heading clearfix" style="border-bottom:3px solid orange;">
+        <strong><span class="glyphicon glyphicon-edit"></span> EDIT MY ACCOUNT</strong>
       </div>
       <div class="panel-body">
         {{-- ✅ Validation Errors --}}
@@ -83,9 +88,13 @@
             >
           </div>
 
-          <div class="form-group clearfix">
-            <a href="{{ route('profile.password.edit') }}" class="btn btn-danger pull-right">Change Password</a>
-            <button type="submit" class="btn btn-info">Update</button>
+          <div class="form-group text-right" style="margin-top:20px;">
+            <button type="submit" class="btn btn-info">
+              <i class="glyphicon glyphicon-ok"></i> Update
+            </button>
+            <a href="{{ route('profile.password.edit') }}" class="btn btn-danger">
+              <i class="glyphicon glyphicon-lock"></i> Change Password
+            </a>
           </div>
         </form>
       </div>
