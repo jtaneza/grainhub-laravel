@@ -43,22 +43,41 @@
                                 class="img-circle img-inline">
                             <span>{{ Auth::user()->name ?? 'Admin' }} <i class="caret"></i></span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#"><i class="glyphicon glyphicon-user"></i> Profile</a></li>
-                            <li><a href="#"><i class="glyphicon glyphicon-cog"></i> Settings</a></li>
-                            <li class="last">
-                                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-link" style="color:black; text-decoration:none;">
-                                        <i class="glyphicon glyphicon-log-out"></i> Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
+                        {{-- ✅ Profile Dropdown Menu --}}
+<ul class="dropdown-menu">
+
+    {{-- 🧍 Profile Page Link --}}
+    {{-- This takes the user to their profile overview (profile.show) --}}
+    <li>
+        <a href="{{ route('profile.show') }}">
+            <i class="glyphicon glyphicon-user"></i> Profile
+        </a>
+    </li>
+
+    {{-- ⚙️ Settings Page Link --}}
+    {{-- This opens the profile editing page (profile.edit) --}}
+    <li>
+        <a href="{{ route('profile.edit') }}">
+            <i class="glyphicon glyphicon-cog"></i> Settings
+        </a>
+    </li>
+
+    {{-- 🔒 Logout --}}
+    {{-- This securely logs out the current user --}}
+    <li class="last">
+        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+            @csrf
+            <button 
+                type="submit" 
+                class="btn btn-link" 
+                style="color:black; text-decoration:none; padding-left:15px;">
+                <i class="glyphicon glyphicon-log-out"></i> Logout
+            </button>
+        </form>
+    </li>
+
+</ul>
+
     </header>
 
     {{-- ✅ Sidebar --}}
