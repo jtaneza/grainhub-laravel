@@ -155,7 +155,7 @@
                     <div class="btn-group" role="group" aria-label="Select Range">
                         <button class="btn btn-default btn-xs" onclick="updateChart('daily')">Daily</button>
                         <button class="btn btn-default btn-xs" onclick="updateChart('weekly')">Weekly</button>
-                        <button class="btn btn-default btn-xs active" onclick="updateChart('monthly')">Monthly</button>
+                        <button class="btn btn-default btn-xs" onclick="updateChart('monthly')">Monthly</button>
                         <button class="btn btn-default btn-xs" onclick="updateChart('yearly')">Yearly</button>
                     </div>
                 </div>
