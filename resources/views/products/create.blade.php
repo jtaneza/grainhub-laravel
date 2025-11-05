@@ -127,7 +127,7 @@
 
                 {{-- ✅ Save Button (Bottom Left) --}}
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <button type="submit" class="btn btn-success btn-block">
                             <i class="glyphicon glyphicon-save"></i> Save Product
                         </button>
