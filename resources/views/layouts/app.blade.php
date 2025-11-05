@@ -37,44 +37,115 @@
 
             <div class="pull-right clearfix">
                 <ul class="info-menu list-inline list-unstyled">
-                    <li class="profile">
-                        <a href="#" data-toggle="dropdown" class="toggle" aria-expanded="false">
-                            <img src="{{ asset('uploads/users/default.png') }}" alt="user image"
-                                class="img-circle img-inline">
-                            <span>{{ Auth::user()->name ?? 'Admin' }} <i class="caret"></i></span>
-                        </a>
-                        {{-- ✅ Profile Dropdown Menu --}}
-<ul class="dropdown-menu">
+                    <li class="dropdown profile" style="list-style:none;">
 
-    {{-- 🧍 Profile Page Link --}}
-    {{-- This takes the user to their profile overview (profile.show) --}}
+    @php
+        $authUser = Auth::user();
+        $userImage = $authUser && $authUser->image
+            ? asset('storage/' . $authUser->image)
+            : asset('uploads/users/default.png');
+    @endphp
+
+    {{-- ✅ Profile Toggle --}}
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"
+       style="display:flex; align-items:center; gap:6px; padding:4px 8px; text-decoration:none;">
+       
+        <img 
+            src="{{ $userImage }}" 
+            alt="User Photo" 
+            style="
+                width:32px !important;
+                height:32px !important;
+                border-radius:50% !important;
+                object-fit:cover !important;
+                display:inline-block !important;
+            "
+        >
+
+        <span style="font-size:13px; color:white;">
+            {{ $authUser->name ?? 'Admin' }} <i class="caret"></i>
+        </span>
+    </a>
+
+    {{-- ✅ Dropdown Menu --}}
+<ul class="dropdown-menu dropdown-menu-right" 
+    style="
+        min-width: 200px;
+        padding: 0;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        right: 0;
+        left: auto;
+    ">
+
+    {{-- 🧍 Profile Header --}}
+    <li style="background: #122030; color: white; text-align: center; padding: 15px;">
+        <img 
+            src="{{ $userImage }}" 
+            alt="user image" 
+            style="
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-bottom: 6px;
+            "
+        >
+        <p style="margin: 0; font-size: 14px;">{{ ucfirst($authUser->name) }}</p>
+        <small>{{ '@' . $authUser->username }}</small>
+    </li>
+
+    <li class="divider" style="margin: 0;"></li>
+
+    {{-- ⚙️ Profile & Settings --}}
     <li>
-        <a href="{{ route('profile.show') }}">
-            <i class="glyphicon glyphicon-user"></i> Profile
+        <a href="{{ route('profile.show') }}" 
+           class="dropdown-item-link"
+           style="padding: 10px 20px; display: block;">
+            <i class="glyphicon glyphicon-user"></i>
+            Profile
+        </a>
+    </li>
+    <li>
+        <a href="{{ route('profile.edit') }}" 
+           class="dropdown-item-link"
+           style="padding: 10px 20px; display: block;">
+            <i class="glyphicon glyphicon-cog"></i>
+            Settings
         </a>
     </li>
 
-    {{-- ⚙️ Settings Page Link --}}
-    {{-- This opens the profile editing page (profile.edit) --}}
-    <li>
-        <a href="{{ route('profile.edit') }}">
-            <i class="glyphicon glyphicon-cog"></i> Settings
-        </a>
-    </li>
+    <li class="divider" style="margin: 0;"></li>
 
     {{-- 🔒 Logout --}}
-    {{-- This securely logs out the current user --}}
-    <li class="last">
-        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+    <li style="padding: 0;">
+        <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
             @csrf
             <button 
                 type="submit" 
-                class="btn btn-link" 
-                style="color:black; text-decoration:none; padding-left:15px;">
-                <i class="glyphicon glyphicon-log-out"></i> Logout
+                class="dropdown-logout-btn"
+                aria-label="Logout"
+                style="
+                    width: 100%;
+                    text-align: left;
+                    padding: 10px 20px; /* ✅ aligns perfectly with other items */
+                    border: none;
+                    background: transparent;
+                    color: #333;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">
+                <i class="glyphicon glyphicon-log-out"></i>
+                Logout
             </button>
         </form>
     </li>
+</ul>
+
+
+
+
+
 
 </ul>
 
