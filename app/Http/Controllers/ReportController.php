@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use PDF; // 👈 Add this for PDF export (requires barryvdh/laravel-dompdf)
+use PDF;
 
 class ReportController extends Controller
 {
-    /** 🗓 DAILY SALES REPORT */
+    /** 🗓 DAILY SALES REPORT (with actual time) */
     public function daily()
     {
         $year = Carbon::now()->year;
@@ -24,23 +24,23 @@ class ReportController extends Controller
             ->whereMonth('sales.date', $month)
             ->select(
                 'products.name as product_name',
-                DB::raw('SUM(sales.qty) as qty'),
-                DB::raw('SUM(sales.qty * products.sale_price) as total_saleing_price'),
+                'sales.qty',
+                DB::raw('(sales.qty * products.sale_price) as total_saleing_price'),
                 DB::raw('COALESCE(users.name, sales.admin_name) as admin_name'),
-                DB::raw('DATE(sales.date) as date')
+                'sales.date'
             )
-            ->groupBy('products.name', 'admin_name', 'date')
-            ->orderBy('date', 'desc')
+            ->orderBy('sales.date', 'desc')
             ->get();
 
         $generatedBy = Auth::user()->name ?? 'System Admin';
+
         return view('reports.daily', compact('sales', 'year', 'month', 'generatedBy'));
     }
 
     /** 📥 DOWNLOAD DAILY SALES REPORT */
     public function downloadDaily($month, $year, Request $request)
     {
-        $format = $request->query('format', 'excel'); // Default Excel
+        $format = $request->query('format', 'excel');
         $sales = $this->getDailySalesData($month, $year);
 
         if ($format === 'pdf') {
@@ -48,14 +48,18 @@ class ReportController extends Controller
             return $pdf->download("daily_sales_{$month}_{$year}.pdf");
         }
 
-        // Default CSV
-        return $this->exportCSV($sales, "daily_sales_{$month}_{$year}.csv", ['#','Product','Qty','Total','Admin','Date']);
+        return $this->exportCSV(
+            $sales,
+            "daily_sales_{$month}_{$year}.csv",
+            ['#', 'Product', 'Qty', 'Total', 'Admin', 'Date & Time'],
+            'daily'
+        );
     }
 
-    /** 📅 MONTHLY SALES REPORT */
-    public function monthly()
+    /** 📅 MONTHLY SALES REPORT (with fallback year) */
+    public function monthly($year = null)
     {
-        $year = Carbon::now()->year;
+        $year = $year ?? Carbon::now()->year;
 
         $sales = Sale::join('products', 'sales.product_id', '=', 'products.id')
             ->leftJoin('users', 'sales.admin_id', '=', 'users.id')
@@ -65,19 +69,21 @@ class ReportController extends Controller
                 DB::raw('SUM(sales.qty) as qty'),
                 DB::raw('SUM(sales.qty * products.sale_price) as total_saleing_price'),
                 DB::raw('DATE_FORMAT(sales.date, "%Y-%m") as month'),
-                DB::raw('GROUP_CONCAT(DISTINCT COALESCE(users.name, sales.admin_name) SEPARATOR ", ") as admins')
+                DB::raw('GROUP_CONCAT(DISTINCT COALESCE(users.name, sales.admin_name) SEPARATOR ", ") as admin_name')
             )
-            ->groupBy('products.name', 'month')
+            ->groupBy('month', 'products.name')
             ->orderBy('month', 'desc')
             ->get();
 
         $generatedBy = Auth::user()->name ?? 'System Admin';
+
         return view('reports.monthly', compact('sales', 'year', 'generatedBy'));
     }
 
     /** 📥 DOWNLOAD MONTHLY SALES REPORT */
-    public function downloadMonthly($year, Request $request)
+    public function downloadMonthly($year = null, Request $request)
     {
+        $year = $year ?? Carbon::now()->year;
         $format = $request->query('format', 'excel');
         $sales = $this->getMonthlySalesData($year);
 
@@ -86,16 +92,21 @@ class ReportController extends Controller
             return $pdf->download("monthly_sales_{$year}.pdf");
         }
 
-        return $this->exportCSV($sales, "monthly_sales_{$year}.csv", ['#','Product','Qty','Total','Admins','Month']);
+        return $this->exportCSV(
+            $sales,
+            "monthly_sales_{$year}.csv",
+            ['#', 'Product', 'Qty', 'Total', 'Admin', 'Month/Year'],
+            'monthly'
+        );
     }
 
-    /** 📊 SALES BY CUSTOM DATE RANGE (GET) */
+    /** 📊 SALES REPORT BY CUSTOM DATE RANGE (FORM) */
     public function byDates()
     {
         return view('reports.byDates', ['sales' => collect()]);
     }
 
-    /** ⚙️ SALES BY CUSTOM DATE RANGE (POST) */
+    /** ⚙️ GENERATE REPORT BY CUSTOM DATE RANGE */
     public function generateByDates(Request $request)
     {
         $request->validate([
@@ -114,7 +125,7 @@ class ReportController extends Controller
         ]);
     }
 
-    /** 📥 DOWNLOAD CUSTOM DATE RANGE SALES REPORT */
+    /** 📥 DOWNLOAD CUSTOM RANGE SALES REPORT */
     public function downloadByDates($start, $end, Request $request)
     {
         $format = $request->query('format', 'excel');
@@ -125,7 +136,12 @@ class ReportController extends Controller
             return $pdf->download("sales_report_{$start}_to_{$end}.pdf");
         }
 
-        return $this->exportCSV($sales, "sales_report_{$start}_to_{$end}.csv", ['#','Product','Qty','Total','Admin','Date']);
+        return $this->exportCSV(
+            $sales,
+            "sales_report_{$start}_to_{$end}.csv",
+            ['#', 'Product', 'Qty', 'Total', 'Admin', 'Date & Time'],
+            'range'
+        );
     }
 
     /* ==============================
@@ -140,13 +156,12 @@ class ReportController extends Controller
             ->whereMonth('sales.date', $month)
             ->select(
                 'products.name as product_name',
-                DB::raw('SUM(sales.qty) as qty'),
-                DB::raw('SUM(sales.qty * products.sale_price) as total_saleing_price'),
+                'sales.qty',
+                DB::raw('(sales.qty * products.sale_price) as total_saleing_price'),
                 DB::raw('COALESCE(users.name, sales.admin_name) as admin_name'),
-                DB::raw('DATE(sales.date) as date')
+                'sales.date'
             )
-            ->groupBy('products.name', 'admin_name', 'date')
-            ->orderBy('date', 'desc')
+            ->orderBy('sales.date', 'desc')
             ->get();
     }
 
@@ -160,47 +175,52 @@ class ReportController extends Controller
                 DB::raw('SUM(sales.qty) as qty'),
                 DB::raw('SUM(sales.qty * products.sale_price) as total_saleing_price'),
                 DB::raw('DATE_FORMAT(sales.date, "%Y-%m") as month'),
-                DB::raw('GROUP_CONCAT(DISTINCT COALESCE(users.name, sales.admin_name) SEPARATOR ", ") as admins')
+                DB::raw('GROUP_CONCAT(DISTINCT COALESCE(users.name, sales.admin_name) SEPARATOR ", ") as admin_name')
             )
-            ->groupBy('products.name', 'month')
+            ->groupBy('month', 'products.name')
             ->orderBy('month', 'desc')
             ->get();
     }
 
+    /** ✅ FIXED: Include full-day timestamps for accurate range filter */
     private function getSalesByRange($start, $end)
     {
+        $startDate = Carbon::parse($start)->startOfDay();
+        $endDate   = Carbon::parse($end)->endOfDay();
+
         return Sale::join('products', 'sales.product_id', '=', 'products.id')
             ->leftJoin('users', 'sales.admin_id', '=', 'users.id')
-            ->whereBetween(DB::raw('DATE(sales.date)'), [$start, $end])
+            ->whereBetween('sales.date', [$startDate, $endDate])
             ->select(
                 'products.name as product_name',
+                'sales.qty',
+                DB::raw('(sales.qty * products.sale_price) as total_saleing_price'),
                 DB::raw('COALESCE(users.name, sales.admin_name) as admin_name'),
-                DB::raw('DATE(sales.date) as date'),
-                DB::raw('SUM(sales.qty) as qty'),
-                DB::raw('SUM(sales.qty * products.sale_price) as total_saleing_price')
+                'sales.date'
             )
-            ->groupBy('products.name', 'admin_name', 'sales.date')
             ->orderBy('sales.date', 'desc')
             ->get();
     }
 
-    /** 📤 Export reusable CSV */
-    private function exportCSV($sales, $filename, $columns)
+    /** 📤 Reusable CSV Exporter */
+    private function exportCSV($sales, $filename, $columns, $type = 'daily')
     {
-        $callback = function() use ($sales, $columns) {
+        $callback = function () use ($sales, $columns, $type) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
 
             foreach ($sales as $i => $sale) {
+                $dateValue = ($type === 'monthly' && isset($sale->month))
+                    ? Carbon::createFromFormat('Y-m', $sale->month)->format('F Y')
+                    : (isset($sale->date) ? Carbon::parse($sale->date)->format('M d, Y h:i A') : 'N/A');
+
                 fputcsv($file, [
                     $i + 1,
-                    $sale->product_name,
+                    $sale->product_name ?? 'N/A',
                     $sale->qty,
                     number_format($sale->total_saleing_price, 2),
-                    $sale->admin_name ?? ($sale->admins ?? 'N/A'),
-                    isset($sale->date)
-                        ? Carbon::parse($sale->date)->format('M d, Y')
-                        : Carbon::parse($sale->month.'-01')->format('M Y'),
+                    $sale->admin_name ?? 'N/A',
+                    $dateValue,
                 ]);
             }
 
@@ -212,9 +232,10 @@ class ReportController extends Controller
             "Content-Disposition" => "attachment; filename={$filename}",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+            "Expires"             => "0",
         ];
 
         return Response::stream($callback, 200, $headers);
     }
 }
+

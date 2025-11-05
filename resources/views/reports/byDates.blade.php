@@ -1,13 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+
 <style>
   .report-wrapper { padding: 25px 30px; }
   .report-card {
+    
     background:#fff;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.05);width:900px;margin-left:0;
   }
   .report-card .card-header {
-    font-weight:600;background:#fff;border-bottom:1px solid #e9ecef;color:#333;padding:15px 20px;
+    font-weight:600;background:#fff;border-bottom:1px solid #FFA500;color:#333;padding:20px 20px;
   }
   .report-card .card-body { padding:25px 20px; }
   .form-control { border-radius:4px;height:38px; }
@@ -30,6 +32,7 @@
     <div class="card-body">
       <form method="POST" action="{{ route('reports.byDates.generate') }}">
         @csrf
+        
         <div class="row align-items-end">
           <!-- Left: Date range -->
           <div class="col-md-8">
