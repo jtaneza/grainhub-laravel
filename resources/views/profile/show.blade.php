@@ -47,40 +47,5 @@
     </div>
   </div>
 
-  {{-- ✅ RIGHT PANEL - Account Information --}}
-  <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading bg-light">
-        <strong><i class="glyphicon glyphicon-user"></i> MY ACCOUNT DETAILS</strong>
-      </div>
-      <div class="panel-body">
-        <div class="form-group">
-          <label>Name</label>
-          <input type="text" class="form-control" value="{{ $user->name }}" readonly>
-        </div>
-
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" class="form-control" value="{{ $user->username }}" readonly>
-        </div>
-
-        <div class="form-group">
-          <label>Role</label>
-          <input type="text" class="form-control" 
-                 value="@if($user->user_level == 1) Administrator 
-                        @elseif($user->user_level == 2) Special User 
-                        @else User 
-                        @endif" readonly>
-        </div>
-
-        <div class="text-right">
-          <a href="{{ route('profile.edit') }}" class="btn btn-info">Edit Account</a>
-          <a href="{{ route('profile.password.edit') }}" class="btn btn-danger">Change Password</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
 @endsection
 

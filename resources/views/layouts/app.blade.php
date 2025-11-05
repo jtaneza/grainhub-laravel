@@ -48,7 +48,7 @@
 
     {{-- ✅ Profile Toggle --}}
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"
-       style="display:flex; align-items:center; gap:6px; padding:4px 8px; text-decoration:none;">
+       style="display:flex; align-items:center; gap:10px; padding:6px 10px; text-decoration:none;">
        
         <img 
             src="{{ $userImage }}" 
@@ -67,35 +67,16 @@
         </span>
     </a>
 
-    {{-- ✅ Dropdown Menu --}}
+ {{-- ✅ Dropdown Menu --}}
 <ul class="dropdown-menu dropdown-menu-right" 
     style="
-        min-width: 200px;
+        min-width: 130px;
         padding: 0;
         border-radius: 6px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         right: 0;
         left: auto;
     ">
-
-    {{-- 🧍 Profile Header --}}
-    <li style="background: #122030; color: white; text-align: center; padding: 15px;">
-        <img 
-            src="{{ $userImage }}" 
-            alt="user image" 
-            style="
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                object-fit: cover;
-                margin-bottom: 6px;
-            "
-        >
-        <p style="margin: 0; font-size: 14px;">{{ ucfirst($authUser->name) }}</p>
-        <small>{{ '@' . $authUser->username }}</small>
-    </li>
-
-    <li class="divider" style="margin: 0;"></li>
 
     {{-- ⚙️ Profile & Settings --}}
     <li>
@@ -128,7 +109,7 @@
                 style="
                     width: 100%;
                     text-align: left;
-                    padding: 10px 20px; /* ✅ aligns perfectly with other items */
+                    padding: 10px 20px;
                     border: none;
                     background: transparent;
                     color: #333;
@@ -141,11 +122,6 @@
         </form>
     </li>
 </ul>
-
-
-
-
-
 
 </ul>
 
