@@ -88,7 +88,7 @@
           <table class="table table-bordered table-hover align-middle">
             <thead>
               <tr>
-                <th>#</th><th>Product</th><th>Quantity</th><th>Total</th><th>Admin</th><th>Date</th>
+                <th>#</th><th>Product</th><th>Quantity</th><th>Total</th><th>Admin/Cashier</th><th>Date</th>
               </tr>
             </thead>
             <tbody>

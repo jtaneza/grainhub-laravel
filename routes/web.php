@@ -19,48 +19,53 @@ use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
-| Authentication Routes
+| 🔐 Authentication Routes
 |--------------------------------------------------------------------------
 */
-    Route::middleware('guest')->group(function () {
+Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-    Route::post('/logout', [AuthController::class, 'logout'])
+Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
-| Protected Routes (Require Login)
+| 🧭 Protected Routes (Require Login)
 |--------------------------------------------------------------------------
 */
-    Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
-    // ✅ Admin Dashboard
+    /*
+    |--------------------------------------------------------------------------
+    | 🏠 Dashboards
+    |--------------------------------------------------------------------------
+    */
+    // Admin Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ✅ Cashier Dashboard
+    // Cashier Dashboard
     Route::middleware(['auth', 'cashier'])->prefix('cashier')->group(function () {
         Route::get('/dashboard', [CashierController::class, 'index'])->name('cashier.dashboard');
     });
 
-    // ✅ Regular User Dashboard
+    // Regular User Dashboard
     Route::get('/user-dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
 
-    // ✅ Categories
+    /*
+    |--------------------------------------------------------------------------
+    | 🗂️ Inventory Management
+    |--------------------------------------------------------------------------
+    */
     Route::resource('categories', CategoryController::class);
-
-    // ✅ Products
     Route::resource('products', ProductController::class);
-
-    // ✅ Suppliers
     Route::resource('suppliers', SupplierController::class);
 
     /*
     |--------------------------------------------------------------------------
-    | 🧩 Group & User Management
+    | 👥 Group & User Management
     |--------------------------------------------------------------------------
     */
     Route::resource('groups', GroupController::class)->except(['show']);
@@ -69,35 +74,35 @@ use App\Http\Controllers\ProfileController;
 
     /*
     |--------------------------------------------------------------------------
-    | 🧾 Reports
+    | 📊 Reports & Sales Summaries
     |--------------------------------------------------------------------------
     */
-        Route::prefix('reports')->group(function () {
-        // View Reports
+    Route::prefix('reports')->group(function () {
+        // Report Views
         Route::get('/daily', [ReportController::class, 'daily'])->name('reports.daily');
         Route::get('/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
         Route::get('/by-dates', [ReportController::class, 'byDates'])->name('reports.byDates');
-        
-        // Handle report generation by date range
+
+        // Generate by Date Range
         Route::post('/by-dates', [ReportController::class, 'generateByDates'])->name('reports.byDates.generate');
 
-        // 🆕 Sales Report Page
+        // Sales Report Page
         Route::get('/sales-report', [ReportController::class, 'salesReport'])->name('reports.salesReport');
         Route::post('/sales-report/filter', [ReportController::class, 'filterSalesReport'])->name('reports.salesReport.filter');
-        
-        // Download Reports
-        Route::get('daily/download/{month}/{year}', [ReportController::class, 'downloadDaily'])->name('reports.daily.download');
-        Route::get('monthly/download/{year}', [ReportController::class, 'downloadMonthly'])->name('reports.monthly.download');
 
+        // Download Reports
+        Route::get('/daily/download/{month}/{year}', [ReportController::class, 'downloadDaily'])->name('reports.daily.download');
+        Route::get('/monthly/download/{year}', [ReportController::class, 'downloadMonthly'])->name('reports.monthly.download');
+        Route::get('/by-dates/download/{start}/{end}', [ReportController::class, 'downloadByDates'])->name('reports.byDates.download');
+
+        // Daily & Monthly Sales
         Route::get('/daily-sales', [DailySalesController::class, 'index'])->name('sales.daily');
         Route::get('/monthly-sales', [MonthlySalesController::class, 'index'])->name('sales.monthly');
-
-        Route::get('/by-dates/download/{start}/{end}', [ReportController::class, 'downloadByDates'])->name('reports.byDates.download');
     });
 
     /*
     |--------------------------------------------------------------------------
-    | 💵 Sales Routes (AJAX + CRUD)
+    | 💵 Sales (AJAX + CRUD)
     |--------------------------------------------------------------------------
     */
     Route::prefix('sales')->name('sales.')->group(function () {
@@ -113,18 +118,20 @@ use App\Http\Controllers\ProfileController;
     | 🧍 Profile Routes
     |--------------------------------------------------------------------------
     */
-    // PROFILE
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::prefix('profile')->group(function () {
+        // Profile Info
+        Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/', [ProfileController::class, 'update'])->name('profile.update');
 
-// SEPARATE ACTIONS
-Route::put('/profile/update-info', [ProfileController::class, 'updateInfo'])->name('profile.update.info');
-Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update.photo');
+        // Separate Actions
+        Route::put('/update-info', [ProfileController::class, 'updateInfo'])->name('profile.update.info');
+        Route::post('/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update.photo');
 
-// PASSWORD
-Route::get('/profile/change-password', [ProfileController::class, 'editPassword'])->name('profile.password.edit');
-Route::put('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+        // Password
+        Route::get('/change-password', [ProfileController::class, 'editPassword'])->name('profile.password.edit');
+        Route::put('/change-password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -137,8 +144,8 @@ Route::put('/profile/change-password', [ProfileController::class, 'updatePasswor
 
     /*
     |--------------------------------------------------------------------------
-    | 📊 Chart Data for Dashboard
+    | 📈 Chart Data (for Dashboard)
     |--------------------------------------------------------------------------
     */
     Route::get('/chart-data', [ChartController::class, 'getSalesData'])->name('chart.data');
-}); // ✅ this is correct and closes the middleware group properly
+});

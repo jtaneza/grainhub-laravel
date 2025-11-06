@@ -127,9 +127,11 @@
 
     </header>
 
-    {{-- ✅ Sidebar --}}
-    <div class="sidebar">
-        <ul class="nav nav-pills nav-stacked">
+{{-- ✅ Sidebar --}}
+<div class="sidebar">
+    <ul class="nav nav-pills nav-stacked">
+        {{-- ✅ ADMIN SIDEBAR --}}
+        @if(Auth::user()->user_level == 1)
             <li>
                 <a href="{{ route('dashboard') }}">
                     <i class="glyphicon glyphicon-home"></i> <span>Dashboard</span>
@@ -186,11 +188,42 @@
                     <li><a href="{{ route('reports.byDates') }}">Sales by Dates</a></li>
                     <li><a href="{{ route('reports.daily') }}">Daily Sales</a></li>
                     <li><a href="{{ route('reports.monthly') }}">Monthly Sales</a></li>
-                    
                 </ul>
             </li>
-        </ul>
-    </div>
+
+        {{-- ✅ CASHIER SIDEBAR --}}
+        @elseif(Auth::user()->user_level == 2)
+            <li>
+                <a href="{{ route('user.dashboard') }}">
+                    <i class="glyphicon glyphicon-home"></i> <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('products.index') }}">
+                    <i class="glyphicon glyphicon-th-large"></i> <span>View Products</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('sales.index') }}">
+                    <i class="glyphicon glyphicon-credit-card"></i> <span>Sales</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="submenu-toggle">
+                    <i class="glyphicon glyphicon-duplicate"></i> <span>Sales Reports</span>
+                </a>
+                <ul class="submenu">
+                    <li><a href="{{ route('reports.daily') }}">Daily Sales</a></li>
+                    <li><a href="{{ route('reports.monthly') }}">Monthly Sales</a></li>
+                </ul>
+            </li>
+        @endif
+    </ul>
+</div>
+
 
     {{-- ✅ Main Content --}}
     <div class="page">

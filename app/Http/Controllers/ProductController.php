@@ -13,7 +13,7 @@ use Illuminate\Support\Carbon;
 class ProductController extends Controller
 {
     /**
-     * Display a listing of the products.
+     * 🧾 Display a listing of the products.
      */
     public function index(Request $request)
     {
@@ -32,7 +32,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for creating a new product.
+     * ➕ Show the form for creating a new product.
      */
     public function create()
     {
@@ -43,7 +43,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Store a newly created product in storage.
+     * 💾 Store a newly created product in storage.
      */
     public function store(Request $request)
     {
@@ -57,24 +57,29 @@ class ProductController extends Controller
             'photo'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Handle image upload
+        // 🖼️ Handle image upload
         $media_id = null;
         if ($request->hasFile('photo')) {
             $file     = $request->file('photo');
             $fileName = time() . '_' . $file->getClientOriginalName();
+            $fileType = $file->getClientMimeType();
+            $fileSize = $file->getSize();
+
             $file->move(public_path('uploads/products'), $fileName);
 
             $media = Media::create([
                 'file_name' => $fileName,
-                'file_type' => $file->getClientMimeType(),
+                'file_type' => $fileType,
+                'size'      => $fileSize,
             ]);
 
             $media_id = $media->id;
         }
 
-        // Get admin name
+        // 👤 Get admin name
         $adminName = Auth::check() ? Auth::user()->name : 'Unknown';
 
+        // 🗃️ Save Product
         Product::create([
             'name'        => $validated['name'],
             'category_id' => $validated['category_id'],
@@ -93,7 +98,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for editing the specified product.
+     * ✏️ Show the form for editing the specified product.
      */
     public function edit(Product $product)
     {
@@ -104,7 +109,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Update the specified product in storage.
+     * ♻️ Update the specified product in storage.
      */
     public function update(Request $request, Product $product)
     {
@@ -118,19 +123,19 @@ class ProductController extends Controller
             'photo'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Keep old media ID
-        $validated['media_id'] = $product->media_id;
+        $media_id = $product->media_id;
 
-        // Handle new image upload
+        // 🖼️ Replace image if new one is uploaded
         if ($request->hasFile('photo')) {
             if ($product->media && file_exists(public_path('uploads/products/' . $product->media->file_name))) {
                 unlink(public_path('uploads/products/' . $product->media->file_name));
+                $product->media->delete();
             }
 
             $file     = $request->file('photo');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $fileSize = $file->getSize();
             $fileType = $file->getClientMimeType();
+            $fileSize = $file->getSize();
 
             $file->move(public_path('uploads/products'), $fileName);
 
@@ -140,14 +145,24 @@ class ProductController extends Controller
                 'size'      => $fileSize,
             ]);
 
-            $validated['media_id'] = $media->id;
+            $media_id = $media->id;
         }
 
-        // Update admin name
-        $validated['admin_name'] = Auth::check() ? Auth::user()->name : 'Unknown';
+        // 👤 Update admin name
+        $adminName = Auth::check() ? Auth::user()->name : 'Unknown';
 
-        // Save updates
-        $product->update($validated);
+        // 💾 Update Product
+        $product->update([
+            'name'        => $validated['name'],
+            'category_id' => $validated['category_id'],
+            'supplier_id' => $validated['supplier_id'] ?? null,
+            'buy_price'   => $validated['buy_price'],
+            'sale_price'  => $validated['sale_price'],
+            'quantity'    => $validated['quantity'],
+            'media_id'    => $media_id,
+            'admin_name'  => $adminName,
+            'date'        => now('Asia/Manila'),
+        ]);
 
         return redirect()
             ->route('products.index')
@@ -155,7 +170,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Redirect show() to edit view.
+     * 🔄 Redirect show() to edit view.
      */
     public function show(Product $product)
     {
@@ -163,11 +178,10 @@ class ProductController extends Controller
     }
 
     /**
-     * Remove the specified product from storage.
+     * 🗑️ Remove the specified product from storage.
      */
     public function destroy(Product $product)
     {
-        // Delete associated media
         if ($product->media && file_exists(public_path('uploads/products/' . $product->media->file_name))) {
             unlink(public_path('uploads/products/' . $product->media->file_name));
             $product->media->delete();

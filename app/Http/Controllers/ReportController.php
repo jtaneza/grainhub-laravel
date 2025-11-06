@@ -51,7 +51,7 @@ class ReportController extends Controller
         return $this->exportCSV(
             $sales,
             "daily_sales_{$month}_{$year}.csv",
-            ['#', 'Product', 'Qty', 'Total', 'Admin', 'Date & Time'],
+            ['#', 'Product', 'Qty', 'Total', 'Admin/Cashier', 'Date & Time'],
             'daily'
         );
     }
@@ -95,7 +95,7 @@ class ReportController extends Controller
         return $this->exportCSV(
             $sales,
             "monthly_sales_{$year}.csv",
-            ['#', 'Product', 'Qty', 'Total', 'Admin', 'Month/Year'],
+            ['#', 'Product', 'Qty', 'Total', 'Admin/Cashier', 'Month/Year'],
             'monthly'
         );
     }
@@ -139,7 +139,7 @@ class ReportController extends Controller
         return $this->exportCSV(
             $sales,
             "sales_report_{$start}_to_{$end}.csv",
-            ['#', 'Product', 'Qty', 'Total', 'Admin', 'Date & Time'],
+            ['#', 'Product', 'Qty', 'Total', 'Admin/Cashier', 'Date & Time'],
             'range'
         );
     }
@@ -238,4 +238,3 @@ class ReportController extends Controller
         return Response::stream($callback, 200, $headers);
     }
 }
-

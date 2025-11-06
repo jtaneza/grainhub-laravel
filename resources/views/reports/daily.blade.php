@@ -16,7 +16,7 @@
             <th class="text-center">Product</th>
             <th class="text-center">Qty</th>
             <th class="text-center">Total</th>
-            <th class="text-center">Admin</th>
+            <th class="text-center">Admin/Cashier</th>
             <th class="text-center">Date & Time</th>
 
           </tr>

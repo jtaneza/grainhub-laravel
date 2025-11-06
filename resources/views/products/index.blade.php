@@ -4,7 +4,6 @@
 <div class="row">
   <div class="col-md-12">
      <strong><span class="glyphicon glyphicon-th"></span> ALL PRODUCTS</strong>
-        </div>
     <hr>
   </div>
 
@@ -24,12 +23,14 @@
           </form>
         </div>
 
-        {{-- ➕ Add New Button --}}
-        <div class="pull-right">
-          <a href="{{ route('products.create') }}" class="btn btn-success">
-            <span class="glyphicon glyphicon-plus"></span> Add New
-          </a>
-        </div>
+        {{-- ➕ Add New Button (only Admin can see) --}}
+        @if(auth()->check() && auth()->user()->user_level == 1)
+          <div class="pull-right">
+            <a href="{{ route('products.create') }}" class="btn btn-success">
+              <span class="glyphicon glyphicon-plus"></span> Add New
+            </a>
+          </div>
+        @endif
 
       </div>
 
@@ -46,7 +47,7 @@
               <th class="text-center" style="width: 10%;">Buying Price</th>
               <th class="text-center" style="width: 10%;">Selling Price</th>
               <th class="text-center" style="width: 15%;">Entry Date</th>
-              <th class="text-center" style="width: 10%;">Admin Name</th> {{-- ✅ New column --}}
+              <th class="text-center" style="width: 10%;">Admin Name</th>
               <th class="text-center" style="width: 100px;">Actions</th>
             </tr>
           </thead>
@@ -98,19 +99,23 @@
 
                 {{-- 🧰 Actions --}}
                 <td class="text-center">
-                  <div class="btn-group">
-                    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info btn-xs" title="Edit">
-                      <span class="glyphicon glyphicon-edit"></span>
-                    </a>
-                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" class="btn btn-danger btn-xs"
-                              onclick="return confirm('Delete this product?')" title="Delete">
-                        <span class="glyphicon glyphicon-trash"></span>
-                      </button>
-                    </form>
-                  </div>
+                  @if(auth()->check() && auth()->user()->user_level == 1)
+                    <div class="btn-group">
+                      <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info btn-xs" title="Edit">
+                        <span class="glyphicon glyphicon-edit"></span>
+                      </a>
+                      <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-xs"
+                                onclick="return confirm('Delete this product?')" title="Delete">
+                          <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                      </form>
+                    </div>
+                  @else
+                    <span class="text-muted">View Only</span>
+                  @endif
                 </td>
               </tr>
             @empty

@@ -18,7 +18,7 @@
         @endif
     </div>
 
-    <div class="col-md-8 col-md-offset-2">
+    <div class="col-md-8">
         <div class="panel panel-default">
             <div class="panel-heading" style="border-bottom: 3px solid #FFa500;">
                 <strong><i class="glyphicon glyphicon-th"></i> ADD NEW USER</strong>

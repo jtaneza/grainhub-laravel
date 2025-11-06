@@ -16,7 +16,7 @@
             <th class="text-center">Qty</th>
             <th class="text-center">Total</th>
             <th class="text-center">Month</th>
-            <th class="text-center">Admin</th>
+            <th class="text-center">Admin/Cashier</th>
           </tr>
         </thead>
 
