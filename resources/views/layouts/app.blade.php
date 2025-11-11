@@ -19,6 +19,8 @@
     {{-- ✅ JS Core Libraries --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
 </head>
 
 <body>
@@ -49,10 +51,10 @@
     {{-- ✅ Profile Toggle --}}
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"
        style="display:flex; align-items:center; gap:10px; padding:6px 10px; text-decoration:none;">
-       
-        <img 
-            src="{{ $userImage }}" 
-            alt="User Photo" 
+
+        <img
+            src="{{ $userImage }}"
+            alt="User Photo"
             style="
                 width:32px !important;
                 height:32px !important;
@@ -68,7 +70,7 @@
     </a>
 
  {{-- ✅ Dropdown Menu --}}
-<ul class="dropdown-menu dropdown-menu-right" 
+<ul class="dropdown-menu dropdown-menu-right"
     style="
         min-width: 130px;
         padding: 0;
@@ -80,7 +82,7 @@
 
     {{-- ⚙️ Profile & Settings --}}
     <li>
-        <a href="{{ route('profile.show') }}" 
+        <a href="{{ route('profile.show') }}"
            class="dropdown-item-link"
            style="padding: 10px 20px; display: block;">
             <i class="glyphicon glyphicon-user"></i>
@@ -88,7 +90,7 @@
         </a>
     </li>
     <li>
-        <a href="{{ route('profile.edit') }}" 
+        <a href="{{ route('profile.edit') }}"
            class="dropdown-item-link"
            style="padding: 10px 20px; display: block;">
             <i class="glyphicon glyphicon-cog"></i>
@@ -102,8 +104,8 @@
     <li style="padding: 0;">
         <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
             @csrf
-            <button 
-                type="submit" 
+            <button
+                type="submit"
                 class="dropdown-logout-btn"
                 aria-label="Logout"
                 style="

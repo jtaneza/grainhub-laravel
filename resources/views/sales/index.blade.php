@@ -41,24 +41,29 @@
                     <tbody>
                         @php
                             $sortedSales = $sales->sortByDesc('date');
-                            $count = $sortedSales->count();
                         @endphp
 
                         @foreach($sortedSales as $index => $sale)
                             @php
-                                if ($index < $count * 0.33) {
-                                    $rowColor = '#d4edda';
-                                } elseif ($index < $count * 0.66) {
-                                    $rowColor = '#fff3cd';
+                                $stock = (int) ($sale->product->quantity ?? 0);
+                                if ($stock <= 10) {
+                                    $stockColor = '#f8d7da'; // 🔴 Low stock
+                                    $textColor = '#721c24';
+                                } elseif ($stock <= 30) {
+                                    $stockColor = '#fff3cd'; // 🟡 Moderate stock
+                                    $textColor = '#856404';
                                 } else {
-                                    $rowColor = '#f8d7da';
+                                    $stockColor = '#d4edda'; // 🟢 Plenty
+                                    $textColor = '#155724';
                                 }
                             @endphp
 
-                            <tr style="background-color: {{ $rowColor }}">
+                            <tr>
                                 <td class="text-center">{{ $index + 1 }}</td>
-                                <td>{{ $sale->product->name ?? 'N/A' }}</td>
-                                <td class="text-center">{{ $sale->product->quantity ?? 0 }}</td>
+                                <td style="text-align: left; padding-left: 15px;">{{ $sale->product->name ?? 'N/A' }}</td>
+                                <td class="text-center" style="background-color: {{ $stockColor }}; color: {{ $textColor }}; font-weight: bold;">
+                                    {{ $sale->product->quantity ?? 0 }}
+                                </td>
                                 <td class="text-center">{{ $sale->qty }}</td>
                                 <td class="text-center">₱{{ number_format($sale->price, 2) }}</td>
                                 <td class="text-center">{{ $sale->admin_name ?? 'N/A' }}</td>
@@ -66,9 +71,8 @@
 
                                 <td class="text-center">
                                     <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-warning btn-xs" title="Edit Sale">
-    <span class="glyphicon glyphicon-edit"></span>
-</a>
-
+                                        <span class="glyphicon glyphicon-edit"></span>
+                                    </a>
 
                                     <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" onsubmit="return confirm('Delete sale?');" style="display:inline;">
                                         @csrf @method('DELETE')
@@ -129,7 +133,7 @@
 
           <div class="mb-2">
             <label class="form-label">Admin</label>
-            <input type="text" name="admin_name" id="edit_admin" class="form-control form-control-sm bg-light" 
+            <input type="text" name="admin_name" id="edit_admin" class="form-control form-control-sm bg-light"
                    value="{{ Auth::user()->name }}" readonly>
           </div>
 

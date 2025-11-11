@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -6,6 +6,52 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+
+/* === Custom hover for color-coded table cells === */
+.table tbody tr td[style*="background-color"]:hover {
+    filter: brightness(95%);
+    transition: 0.2s ease;
+}
+/* === Dashboard Stat Panels === */
+.panel-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 10px;
+    border-radius: 6px;
+    min-height: 100px;
+}
+
+.panel-icon {
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.panel-icon i {
+    font-size: 38px;
+    color: #ffb100; /* golden yellow icons */
+}
+
+.panel-value {
+    flex: 1;
+    text-align: center;
+}
+
+.panel-value h2 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.panel-value p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 14px;
 }

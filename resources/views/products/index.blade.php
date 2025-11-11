@@ -53,6 +53,20 @@
           </thead>
           <tbody>
             @forelse($products as $index => $product)
+              @php
+                $quantity = (int) $product->quantity;
+                if ($quantity <= 10) {
+                    $stockColor = '#f8d7da'; // 🔴 Red
+                    $textColor = '#721c24';
+                } elseif ($quantity <= 30) {
+                    $stockColor = '#fff3cd'; // 🟡 Yellow
+                    $textColor = '#856404';
+                } else {
+                    $stockColor = '#d4edda'; // 🟢 Green
+                    $textColor = '#155724';
+                }
+              @endphp
+
               <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
 
@@ -71,17 +85,15 @@
                 <td>{{ $product->name }}</td>
 
                 {{-- 🏷 Category --}}
-                <td class="text-center">
-                  {{ $product->category->name ?? '—' }}
-                </td>
+                <td class="text-center">{{ $product->category->name ?? '—' }}</td>
 
                 {{-- 🚚 Supplier --}}
-                <td class="text-center">
-                  {{ $product->supplier->name ?? '—' }}
-                </td>
+                <td class="text-center">{{ $product->supplier->name ?? '—' }}</td>
 
-                {{-- 🔢 Quantity --}}
-                <td class="text-center">{{ $product->quantity }}</td>
+                {{-- 🔢 Quantity (Color-Coded) --}}
+                <td class="text-center" style="background-color: {{ $stockColor }}; color: {{ $textColor }}; font-weight: bold;">
+                    {{ $product->quantity }}
+                </td>
 
                 {{-- 💰 Prices --}}
                 <td class="text-center">₱{{ number_format($product->buy_price, 2) }}</td>
@@ -93,9 +105,7 @@
                 </td>
 
                 {{-- 👤 Admin Name --}}
-                <td class="text-center">
-                  {{ $product->admin_name ?? 'Unknown' }}
-                </td>
+                <td class="text-center">{{ $product->admin_name ?? 'Unknown' }}</td>
 
                 {{-- 🧰 Actions --}}
                 <td class="text-center">

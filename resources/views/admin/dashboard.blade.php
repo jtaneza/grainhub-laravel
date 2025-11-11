@@ -6,7 +6,6 @@
 
 {{-- ✅ Safe Debug Section (optional) --}}
 @if(isset($recentSales))
-
     {{-- <pre>{{ print_r($recentSales->toArray(), true) }}</pre> --}}
 @else
     <div style="background: #f8d7da; padding: 8px; border: 1px solid #f5c6cb; margin-bottom: 10px;">
@@ -55,74 +54,87 @@
     </div>
 @endif
 
-{{-- ✅ Stats Panels --}}
-<div class="row">
+{{-- ✅ Balanced Stats Panels --}}
+<div class="row text-center">
+
+    {{-- Users --}}
     <a href="{{ route('users.index') }}" style="color:black;">
         <div class="col-md-3">
-            <div class="panel panel-box clearfix">
-                <div class="panel-icon pull-left bg-secondary1">
-                    <i class="glyphicon glyphicon-user"></i>
+            <div class="panel panel-box clearfix" style="display: flex; align-items: center; height: 110px;">
+                <div class="panel-icon bg-secondary1 text-center"
+                     style="width: 45%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <i class="glyphicon glyphicon-user" style="font-size: 40px; color: #FFA500;"></i>
+                    <p style="color: white; font-size: 14px; margin: 5px 0 0;">Users</p>
                 </div>
-                <div class="panel-value pull-right">
-                    <h2 class="margin-top">{{ $usersCount }}</h2>
-                    <p class="text-muted">Users</p>
+                <div class="panel-value text-center"
+                     style="width: 55%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h2 style="margin: 0; font-size: 36px;">{{ $usersCount }}</h2>
                 </div>
             </div>
         </div>
     </a>
 
+    {{-- Categories --}}
     <a href="{{ route('categories.index') }}" style="color:black;">
         <div class="col-md-3">
-            <div class="panel panel-box clearfix">
-                <div class="panel-icon pull-left bg-red">
-                    <i class="glyphicon glyphicon-th-large"></i>
+            <div class="panel panel-box clearfix" style="display: flex; align-items: center; height: 110px;">
+                <div class="panel-icon bg-red text-center"
+                     style="width: 45%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <i class="glyphicon glyphicon-th-large" style="font-size: 40px; color: #FFA500;"></i>
+                    <p style="color: white; font-size: 14px; margin: 5px 0 0;">Categories</p>
                 </div>
-                <div class="panel-value pull-right">
-                    <h2 class="margin-top">{{ $categoriesCount }}</h2>
-                    <p class="text-muted">Categories</p>
+                <div class="panel-value text-center"
+                     style="width: 55%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h2 style="margin: 0; font-size: 36px;">{{ $categoriesCount }}</h2>
                 </div>
             </div>
         </div>
     </a>
 
+    {{-- Products --}}
     <a href="{{ route('products.index') }}" style="color:black;">
         <div class="col-md-3">
-            <div class="panel panel-box clearfix">
-                <div class="panel-icon pull-left bg-blue2">
-                    <i class="glyphicon glyphicon-shopping-cart"></i>
+            <div class="panel panel-box clearfix" style="display: flex; align-items: center; height: 110px;">
+                <div class="panel-icon bg-blue2 text-center"
+                     style="width: 45%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <i class="glyphicon glyphicon-shopping-cart" style="font-size: 40px; color: #FFA500;"></i>
+                    <p style="color: white; font-size: 14px; margin: 5px 0 0;">Products</p>
                 </div>
-                <div class="panel-value pull-right">
-                    <h2 class="margin-top">{{ $productsCount }}</h2>
-                    <p class="text-muted">Products</p>
+                <div class="panel-value text-center"
+                     style="width: 55%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h2 style="margin: 0; font-size: 36px;">{{ $productsCount }}</h2>
                 </div>
             </div>
         </div>
     </a>
 
+    {{-- Sales --}}
     <a href="{{ route('sales.index') }}" style="color:black;">
         <div class="col-md-3">
-            <div class="panel panel-box clearfix">
-                <div class="panel-icon pull-left bg-green">
-                    <i class="glyphicon glyphicon-usd"></i>
+            <div class="panel panel-box clearfix" style="display: flex; align-items: center; height: 110px;">
+                <div class="panel-icon bg-green text-center"
+                     style="width: 45%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <i class="glyphicon glyphicon-usd" style="font-size: 40px; color: #FFA500;"></i>
+                    <p style="color: white; font-size: 14px; margin: 5px 0 0;">Sales</p>
                 </div>
-                <div class="panel-value pull-right">
-                    <h2 class="margin-top">{{ $salesCount }}</h2>
-                    <p class="text-muted">Sales</p>
+                <div class="panel-value text-center"
+                     style="width: 55%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h2 style="margin: 0; font-size: 36px;">{{ $salesCount }}</h2>
                 </div>
             </div>
         </div>
     </a>
 </div>
 
-{{-- ✅ Recent Sales Table with color coding --}}
+{{-- ✅ Recent Sales Table --}}
 <div class="card mt-3">
     <div class="card-header bg-light">
         <i class="fas fa-history me-2"></i> RECENT SALES
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered table-striped align-middle text-center mb-0">
-                <thead class="table-dark">
+            <table class="table table-bordered table-striped table-hover align-middle text-center mb-0">
+                <thead class="bg-primary text-white">
                     <tr>
                         <th>#</th>
                         <th>Product Name</th>
@@ -133,34 +145,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        $sortedSales = $recentSales->sortByDesc('date');
-                        $count = $sortedSales->count();
-                    @endphp
-
+                    @php $sortedSales = $recentSales->sortByDesc('date'); @endphp
                     @forelse($sortedSales as $index => $sale)
-                        @php
-                            if ($index < $count * 0.33) {
-                                $rowColor = '#d4edda'; // 🟩 newest
-                            } elseif ($index < $count * 0.66) {
-                                $rowColor = '#fff3cd'; // 🟨 middle
-                            } else {
-                                $rowColor = '#f8d7da'; // 🟥 oldest
-                            }
-                        @endphp
-
-                        <tr style="background-color: {{ $rowColor }}">
+                        <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $sale->product->name ?? 'N/A' }}</td>
+                            <td style="text-align: left; padding-left: 15px;">{{ $sale->product->name ?? 'N/A' }}</td>
                             <td>{{ $sale->qty }}</td>
                             <td>₱{{ number_format($sale->price, 2) }}</td>
                             <td>{{ $sale->user->name ?? $sale->admin_name ?? 'N/A' }}</td>
                             <td>{{ $sale->date ? \Carbon\Carbon::parse($sale->date)->format('Y-m-d h:i A') : 'N/A' }}</td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="6" class="text-center text-muted">No sales recorded yet</td>
-                        </tr>
+                        <tr><td colspan="6" class="text-center text-muted">No recent sales recorded.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -168,7 +164,7 @@
     </div>
 </div>
 
-{{-- ✅ Chart Section --}}
+{{-- ✅ Chart + Summary + PDF --}}
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
@@ -178,57 +174,103 @@
                     <button class="btn btn-default btn-xs" onclick="updateChart('daily')">Daily</button>
                     <button class="btn btn-default btn-xs" onclick="updateChart('weekly')">Weekly</button>
                     <button class="btn btn-default btn-xs" onclick="updateChart('monthly')">Monthly</button>
-                    <button class="btn btn-default btn-xs" onclick="updateChart('yearly')">Yearly</button>
                 </div>
             </div>
-            <div class="panel-body" style="height: 350px;">
+
+            <div class="panel-body" id="chart-section" style="height: 350px;">
                 <canvas id="salesChart" style="max-width: 100%; height: 100%;"></canvas>
+            </div>
+
+            {{-- ✅ Sales Summary + PDF Button --}}
+            <div class="panel-footer bg-light" id="sales-summary"
+                 style="padding: 15px; display: flex; justify-content: space-around; text-align: center;">
+                <div>
+                    <h4>₱<span id="totalSales">0.00</span></h4>
+                    <p class="text-muted">Total Sales</p>
+                </div>
+                <div>
+                    <h4>₱<span id="averageSale">0.00</span></h4>
+                    <p class="text-muted">Average Sale</p>
+                </div>
+                <div>
+                    <h4>₱<span id="highestSale">0.00</span></h4>
+                    <p class="text-muted">Highest Sale</p>
+                </div>
+                <div>
+                    <h4>₱<span id="lowestSale">0.00</span></h4>
+                    <p class="text-muted">Lowest Sale</p>
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-sm" onclick="downloadPDF()">
+                        <i class="glyphicon glyphicon-download"></i> Download PDF
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- ✅ Chart.js --}}
+{{-- ✅ Scripts --}}
 <script src="{{ asset('libs/js/chart.umd.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
-    const ctx = document.getElementById('salesChart').getContext('2d');
-    let salesChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Sales (₱)',
-                data: [],
-                borderColor: '#FFA500',
-                backgroundColor: 'rgba(255,165,0,0.2)',
-                fill: true,
-                tension: 0.3,
-                pointBackgroundColor: '#FF8C00',
-                pointBorderColor: '#fff',
-                pointHoverRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } }
-        }
+const ctx = document.getElementById('salesChart').getContext('2d');
+let salesChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [{
+        label: 'Sales (₱)',
+        data: [],
+        borderColor: '#FFA500',
+        backgroundColor: 'rgba(255,165,0,0.2)',
+        fill: true,
+        tension: 0.3
+    }]},
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+});
+
+// ✅ Fixed Summary Calculations
+function updateSalesSummary(values) {
+    if (!values.length) return;
+    const nums = values.map(v => parseFloat(v) || 0);
+    const total = nums.reduce((a, b) => a + b, 0);
+    const avg = total / nums.length;
+    const max = Math.max(...nums);
+    const min = Math.min(...nums);
+    document.getElementById('totalSales').textContent = total.toLocaleString(undefined,{minimumFractionDigits:2});
+    document.getElementById('averageSale').textContent = avg.toLocaleString(undefined,{minimumFractionDigits:2});
+    document.getElementById('highestSale').textContent = max.toLocaleString(undefined,{minimumFractionDigits:2});
+    document.getElementById('lowestSale').textContent = min.toLocaleString(undefined,{minimumFractionDigits:2});
+}
+
+// ✅ PDF Export
+function downloadPDF() {
+    const chartSection = document.getElementById('chart-section');
+    html2canvas(chartSection).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jspdf.jsPDF('landscape', 'mm', 'a4');
+        const imgWidth = 280;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        pdf.text("Sales Overview Report", 14, 15);
+        pdf.addImage(imgData, 'PNG', 10, 25, imgWidth, imgHeight);
+        pdf.save('sales_overview.pdf');
     });
+}
 
-    function updateChart(range) {
-        fetch(`/chart-data?range=${range}`)
-            .then(res => res.json())
-            .then(res => {
-                salesChart.data.labels = res.labels;
-                salesChart.data.datasets[0].data = res.values;
-                salesChart.update();
+// ✅ Fetch + Update Chart
+function updateChart(range) {
+    fetch(`/chart-data?range=${range}`)
+        .then(res => res.json())
+        .then(res => {
+            const nums = res.values.map(v => parseFloat(v) || 0);
+            salesChart.data.labels = res.labels;
+            salesChart.data.datasets[0].data = nums;
+            salesChart.update();
+            updateSalesSummary(nums);
+        });
+}
 
-                document.querySelectorAll(".btn-group button").forEach(btn => btn.classList.remove("active"));
-                document.querySelector(`.btn-group button[onclick="updateChart('${range}')"]`).classList.add("active");
-            })
-            .catch(err => console.error("Error loading chart data:", err));
-    }
-
-    document.addEventListener("DOMContentLoaded", () => updateChart('monthly'));
+document.addEventListener("DOMContentLoaded", () => updateChart('monthly'));
 </script>
 @endsection
