@@ -204,3 +204,4 @@ class SaleController extends Controller
             ->with('success', 'Sale deleted successfully.');
     }
 }
+//
