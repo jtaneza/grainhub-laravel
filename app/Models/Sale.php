@@ -9,6 +9,8 @@ class Sale extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;  // ← REQUIRED
+
     protected $table = 'sales';
 
     protected $fillable = [
