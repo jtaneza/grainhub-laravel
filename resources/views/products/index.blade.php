@@ -37,103 +37,91 @@
       <div class="panel-body">
         <table class="table table-bordered table-striped">
           <thead>
-            <tr>
-              <th class="text-center" style="width: 50px;">#</th>
-              <th>Photo</th>
-              <th>Product Title</th>
-              <th class="text-center" style="width: 10%;">Category</th>
-              <th class="text-center" style="width: 15%;">Supplier</th>
-              <th class="text-center" style="width: 10%;">In-Stock</th>
-              <th class="text-center" style="width: 10%;">Buying Price</th>
-              <th class="text-center" style="width: 10%;">Selling Price</th>
-              <th class="text-center" style="width: 15%;">Entry Date</th>
-              <th class="text-center" style="width: 10%;">Admin Name</th>
-              <th class="text-center" style="width: 100px;">Actions</th>
-            </tr>
-          </thead>
+  <tr>
+    <th class="text-center" style="width: 5%;">#</th>
+    <th>Photo</th>
+    <th class="text-center" style="width: 10%;">Product Title</th>
+    <th class="text-center" style="width: 10%;">Category</th>
+    <th class="text-center" style="width: 15%;">Supplier</th>
+    <th class="text-center" style="width: 10%;">In-Stock</th>
+    <th class="text-center" style="width: 10%;">Buying Price</th>
+    <th class="text-center" style="width: 10%;">Selling Price</th>
+    <th class="text-center" style="width: 15%;">Entry Date</th>
+    <th class="text-center" style="width: 10%;">Admin Name</th>
+
+    {{-- Show "Actions" only for Admin --}}
+    @if(auth()->check() && auth()->user()->user_level == 1)
+      <th class="text-center" style="width: 100px;">Actions</th>
+    @endif
+  </tr>
+</thead>
+
           <tbody>
-            @forelse($products as $index => $product)
-              @php
-                $quantity = (int) $product->quantity;
-                if ($quantity <= 10) {
-                    $stockColor = '#f8d7da'; // 🔴 Red
-                    $textColor = '#721c24';
-                } elseif ($quantity <= 30) {
-                    $stockColor = '#fff3cd'; // 🟡 Yellow
-                    $textColor = '#856404';
-                } else {
-                    $stockColor = '#d4edda'; // 🟢 Green
-                    $textColor = '#155724';
-                }
-              @endphp
+  @forelse($products as $index => $product)
+    <tr>
+      <td class="text-center">{{ $index + 1 }}</td>
 
-              <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
+      {{-- 🖼 Product Image --}}
+      <td class="text-center">
+        @if($product->media && $product->media->file_name)
+          <img src="{{ asset('uploads/products/'.$product->media->file_name) }}"
+               class="img-avatar img-circle" width="50" height="50" alt="">
+        @else
+          <img src="{{ asset('uploads/products/no_image.png') }}"
+               class="img-avatar img-circle" width="50" height="50" alt="">
+        @endif
+      </td>
 
-                {{-- 🖼 Product Image --}}
-                <td class="text-center">
-                  @if($product->media && $product->media->file_name)
-                    <img src="{{ asset('uploads/products/'.$product->media->file_name) }}"
-                         class="img-avatar img-circle" width="50" height="50" alt="">
-                  @else
-                    <img src="{{ asset('uploads/products/no_image.png') }}"
-                         class="img-avatar img-circle" width="50" height="50" alt="">
-                  @endif
-                </td>
+      {{-- 📦 Product Name --}}
+      <td>{{ $product->name }}</td>
 
-                {{-- 📦 Product Name --}}
-                <td>{{ $product->name }}</td>
+      {{-- 🏷 Category --}}
+      <td class="text-center">{{ $product->category->name ?? '—' }}</td>
 
-                {{-- 🏷 Category --}}
-                <td class="text-center">{{ $product->category->name ?? '—' }}</td>
+      {{-- 🚚 Supplier --}}
+      <td class="text-center">{{ $product->supplier->name ?? '—' }}</td>
 
-                {{-- 🚚 Supplier --}}
-                <td class="text-center">{{ $product->supplier->name ?? '—' }}</td>
+      {{-- 🔢 Quantity --}}
+      <td class="text-center">{{ $product->quantity }}</td>
 
-                {{-- 🔢 Quantity (Color-Coded) --}}
-                <td class="text-center" style="background-color: {{ $stockColor }}; color: {{ $textColor }}; font-weight: bold;">
-                    {{ $product->quantity }}
-                </td>
+      {{-- 💰 Prices --}}
+      <td class="text-center">₱{{ number_format($product->buy_price, 2) }}</td>
+      <td class="text-center">₱{{ number_format($product->sale_price, 2) }}</td>
 
-                {{-- 💰 Prices --}}
-                <td class="text-center">₱{{ number_format($product->buy_price, 2) }}</td>
-                <td class="text-center">₱{{ number_format($product->sale_price, 2) }}</td>
+      {{-- 📅 Date --}}
+      <td class="text-center">{{ \Carbon\Carbon::parse($product->date)->format('F d, Y, h:i:s a') }}</td>
 
-                {{-- 📅 Date --}}
-                <td class="text-center">
-                  {{ \Carbon\Carbon::parse($product->date)->format('F d, Y, h:i:s a') }}
-                </td>
+      {{-- 👤 Admin Name --}}
+      <td class="text-center">{{ $product->admin_name ?? 'Unknown' }}</td>
 
-                {{-- 👤 Admin Name --}}
-                <td class="text-center">{{ $product->admin_name ?? 'Unknown' }}</td>
+      {{-- 🧰 Actions (Only for Admin) --}}
+      @if(auth()->check() && auth()->user()->user_level == 1)
+        <td class="text-center">
+          <div class="btn-group">
+            <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info btn-xs" title="Edit">
+              <span class="glyphicon glyphicon-edit"></span>
+            </a>
+            <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-danger btn-xs"
+                      onclick="return confirm('Delete this product?')" title="Delete">
+                <span class="glyphicon glyphicon-trash"></span>
+              </button>
+            </form>
+          </div>
+        </td>
+      @endif
+    </tr>
+  @empty
+    <tr>
+      <td colspan="{{ auth()->check() && auth()->user()->user_level == 1 ? '11' : '10' }}" class="text-center">
+        No products found.
+      </td>
+    </tr>
+  @endforelse
+</tbody>
 
-                {{-- 🧰 Actions --}}
-                <td class="text-center">
-                  @if(auth()->check() && auth()->user()->user_level == 1)
-                    <div class="btn-group">
-                      <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info btn-xs" title="Edit">
-                        <span class="glyphicon glyphicon-edit"></span>
-                      </a>
-                      <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-xs"
-                                onclick="return confirm('Delete this product?')" title="Delete">
-                          <span class="glyphicon glyphicon-trash"></span>
-                        </button>
-                      </form>
-                    </div>
-                  @else
-                    <span class="text-muted">View Only</span>
-                  @endif
-                </td>
-              </tr>
-            @empty
-              <tr>
-                <td colspan="11" class="text-center">No products found.</td>
-              </tr>
-            @endforelse
-          </tbody>
         </table>
       </div>
     </div>

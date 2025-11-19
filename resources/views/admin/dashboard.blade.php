@@ -62,13 +62,13 @@
         <div class="col-md-3">
             <div class="panel panel-box clearfix" style="display: flex; align-items: center; height: 110px;">
                 <div class="panel-icon bg-secondary1 text-center"
-                     style="width: 45%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                     style="width: 50%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                     <i class="glyphicon glyphicon-user" style="font-size: 40px; color: #FFA500;"></i>
-                    <p style="color: white; font-size: 14px; margin: 5px 0 0;">Users</p>
+                    <p style="color: white; font-size: 16px; margin: 5px 0 0;">Users</p>
                 </div>
                 <div class="panel-value text-center"
-                     style="width: 55%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <h2 style="margin: 0; font-size: 36px;">{{ $usersCount }}</h2>
+                     style="width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h2 style="margin: 0; font-size: 40px;">{{ $usersCount }}</h2>
                 </div>
             </div>
         </div>
@@ -79,13 +79,13 @@
         <div class="col-md-3">
             <div class="panel panel-box clearfix" style="display: flex; align-items: center; height: 110px;">
                 <div class="panel-icon bg-red text-center"
-                     style="width: 45%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                     style="width: 50%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                     <i class="glyphicon glyphicon-th-large" style="font-size: 40px; color: #FFA500;"></i>
-                    <p style="color: white; font-size: 14px; margin: 5px 0 0;">Categories</p>
+                    <p style="color: white; font-size: 16px; margin: 5px 0 0;">Categories</p>
                 </div>
                 <div class="panel-value text-center"
-                     style="width: 55%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <h2 style="margin: 0; font-size: 36px;">{{ $categoriesCount }}</h2>
+                     style="width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h2 style="margin: 0; font-size: 40px;">{{ $categoriesCount }}</h2>
                 </div>
             </div>
         </div>
@@ -96,13 +96,13 @@
         <div class="col-md-3">
             <div class="panel panel-box clearfix" style="display: flex; align-items: center; height: 110px;">
                 <div class="panel-icon bg-blue2 text-center"
-                     style="width: 45%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                     style="width: 50%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                     <i class="glyphicon glyphicon-shopping-cart" style="font-size: 40px; color: #FFA500;"></i>
-                    <p style="color: white; font-size: 14px; margin: 5px 0 0;">Products</p>
+                    <p style="color: white; font-size: 16px; margin: 5px 0 0;">Products</p>
                 </div>
                 <div class="panel-value text-center"
-                     style="width: 55%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <h2 style="margin: 0; font-size: 36px;">{{ $productsCount }}</h2>
+                     style="width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h2 style="margin: 0; font-size: 40px;">{{ $productsCount }}</h2>
                 </div>
             </div>
         </div>
@@ -113,13 +113,13 @@
         <div class="col-md-3">
             <div class="panel panel-box clearfix" style="display: flex; align-items: center; height: 110px;">
                 <div class="panel-icon bg-green text-center"
-                     style="width: 45%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                     style="width: 50%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                     <i class="glyphicon glyphicon-usd" style="font-size: 40px; color: #FFA500;"></i>
-                    <p style="color: white; font-size: 14px; margin: 5px 0 0;">Sales</p>
+                    <p style="color: white; font-size: 16px; margin: 5px 0 0;">Sales</p>
                 </div>
                 <div class="panel-value text-center"
-                     style="width: 55%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <h2 style="margin: 0; font-size: 36px;">{{ $salesCount }}</h2>
+                     style="width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h2 style="margin: 0; font-size: 40px;">{{ $salesCount }}</h2>
                 </div>
             </div>
         </div>
@@ -127,33 +127,34 @@
 </div>
 
 {{-- ✅ Recent Sales Table --}}
-<div class="card mt-3">
-    <div class="card-header bg-light">
-        <i class="fas fa-history me-2"></i> RECENT SALES
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover align-middle text-center mb-0">
-                <thead class="bg-primary text-white">
-                    <tr>
-                        <th>#</th>
-                        <th>Product Name</th>
-                        <th>Qty</th>
-                        <th>Total Sale</th>
-                        <th>Admin</th>
-                        <th>Date & Time</th>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong><span class="glyphicon glyphicon-stats"></span> Recent Sales</strong>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped table-bordered table-condensed">
+                    <thead>
+                        <tr>
+                        <th class="text-center" style="width: 1%;">#</th>
+                        <th class="text-left" style="width: 8%;">Product Name</th>
+                        <th class="text-center" style="width: 2%;">Qty</th>
+                        <th class="text-center" style="width: 7%;">Total Sales</th>
+                        <th class="text-center" style="width: 5%;">Admin/Cashier</th>
+                        <th class="text-center" style="width: 8%;">Date & Time</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php $sortedSales = $recentSales->sortByDesc('date'); @endphp
                     @forelse($sortedSales as $index => $sale)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td class="text-center">{{ $index + 1 }}</td>
                             <td style="text-align: left; padding-left: 15px;">{{ $sale->product->name ?? 'N/A' }}</td>
-                            <td>{{ $sale->qty }}</td>
-                            <td>₱{{ number_format($sale->price, 2) }}</td>
-                            <td>{{ $sale->user->name ?? $sale->admin_name ?? 'N/A' }}</td>
-                            <td>{{ $sale->date ? \Carbon\Carbon::parse($sale->date)->format('Y-m-d h:i A') : 'N/A' }}</td>
+                            <td class="text-center">{{ $sale->qty }}</td>
+                            <td class="text-center">₱{{ number_format($sale->price, 2) }}</td>
+                            <td class="text-center">{{ $sale->user->name ?? $sale->admin_name ?? 'N/A' }}</td>
+                            <td class="text-center">{{ $sale->date ? \Carbon\Carbon::parse($sale->date)->format('Y-m-d h:i A') : 'N/A' }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="6" class="text-center text-muted">No recent sales recorded.</td></tr>

@@ -157,23 +157,15 @@
             </li>
 
             <li>
-                <a href="#" class="submenu-toggle">
-                    <i class="glyphicon glyphicon-th-large"></i> <span>Products</span>
+                <a href="{{ route('products.index') }}">
+                    <i class="glyphicon glyphicon-indent-left"></i> <span>Products</span>
                 </a>
-                <ul class="submenu">
-                    <li><a href="{{ route('products.index') }}">Manage Products</a></li>
-                    <li><a href="{{ route('products.create') }}">Add Product</a></li>
-                </ul>
             </li>
 
             <li>
-                <a href="#" class="submenu-toggle">
-                    <i class="glyphicon glyphicon-briefcase"></i> <span>Suppliers</span>
+                <a href="{{ route('suppliers.index') }}">
+                    <i class="glyphicon glyphicon-indent-left"></i> <span>suppliers</span>
                 </a>
-                <ul class="submenu">
-                    <li><a href="{{ route('suppliers.index') }}">Manage Suppliers</a></li>
-                    <li><a href="{{ route('suppliers.create') }}">Add Supplier</a></li>
-                </ul>
             </li>
 
             <li>

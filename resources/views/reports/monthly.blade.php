@@ -12,7 +12,7 @@
         <thead class="table-dark">
           <tr>
             <th class="text-center">#</th>
-            <th class="text-center">Product</th>
+            <th>Product</th>
             <th class="text-center">Qty</th>
             <th class="text-center">Total</th>
             <th class="text-center">Month</th>
