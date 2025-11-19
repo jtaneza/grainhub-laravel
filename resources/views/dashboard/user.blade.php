@@ -104,36 +104,32 @@
                 <table class="table table-striped table-bordered table-condensed">
                     <thead>
                         <tr>
-                            <th class="text-center" style="width: 50px;">#</th>
-                            <th>Product Name</th>
-                            <th class= "text-center">Qty</th>
-                            <th class= "text-center">Total Sale</th>
-                            <th class= "text-center">Admin</th>
-                            <th class= "text-center">Date & Time</th>
+                        <th class="text-center" style="width: 1%;">#</th>
+                        <th class="text-left" style="width: 8%;">Product Name</th>
+                        <th class="text-center" style="width: 2%;">Qty</th>
+                        <th class="text-center" style="width: 7%;">Total Sales</th>
+                        <th class="text-center" style="width: 5%;">Admin/Cashier</th>
+                        <th class="text-center" style="width: 8%;">Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $sortedSales = $recentSales->sortByDesc('date'); @endphp
+                    @forelse($sortedSales as $index => $sale)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td style="text-align: left; padding-left: 15px;">{{ $sale->product->name ?? 'N/A' }}</td>
+                            <td class="text-center">{{ $sale->qty }}</td>
+                            <td class="text-center">₱{{ number_format($sale->price, 2) }}</td>
+                            <td class="text-center">{{ $sale->user->name ?? $sale->admin_name ?? 'N/A' }}</td>
+                            <td class="text-center">{{ $sale->date ? \Carbon\Carbon::parse($sale->date)->format('Y-m-d h:i A') : 'N/A' }}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($recentSales as $index => $sale)
-                            <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
-                                <td>{{ $sale->product->name ?? $sale->name ?? 'N/A' }}</td>
-                                <td>{{ $sale->quantity ?? 0 }}</td>
-                                <td>₱{{ number_format(($sale->price * $sale->quantity), 2) }}</td>
-                                <td>{{ $sale->user->name ?? 'N/A' }}</td>
-                                <td>
-                                    {{ $sale->created_at ? $sale->created_at->format('Y-m-d h:i A') : 'N/A' }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center">No recent sales found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-    
-            </div>
+                    @empty
+                        <tr><td colspan="6" class="text-center text-muted">No recent sales recorded.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
 @endsection

@@ -81,8 +81,27 @@
       {{-- 🚚 Supplier --}}
       <td class="text-center">{{ $product->supplier->name ?? '—' }}</td>
 
-      {{-- 🔢 Quantity --}}
-      <td class="text-center">{{ $product->quantity }}</td>
+      {{-- 🔢 Quantity with Color --}}
+@php
+    $stock = (int) $product->quantity;
+
+    if ($stock <= 10) {
+        $bg = '#f8d7da';   // 🔴 low stock
+        $text = '#721c24';
+    } elseif ($stock <= 30) {
+        $bg = '#fff3cd';   // 🟡 medium stock
+        $text = '#856404';
+    } else {
+        $bg = '#d4edda';   // 🟢 high stock
+        $text = '#155724';
+    }
+@endphp
+
+<td class="text-center"
+    style="background-color: {{ $bg }}; color: {{ $text }}; font-weight: bold;">
+    {{ $product->quantity }}
+</td>
+
 
       {{-- 💰 Prices --}}
       <td class="text-center">₱{{ number_format($product->buy_price, 2) }}</td>
