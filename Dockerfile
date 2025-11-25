@@ -25,9 +25,10 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 COPY . /var/www/html/
 
 # Create uploads folder and set permissions
-RUN mkdir -p /var/www/html/public/uploads \
-  && chown -R www-data:www-data /var/www/html/public/uploads \
-  && chmod -R 775 /var/www/html/public/uploads
+RUN mkdir -p /var/www/html/public/uploads/users \
+    && mkdir -p /var/www/html/public/uploads/products \
+    && chown -R www-data:www-data /var/www/html/public/uploads \
+    && chmod -R 775 /var/www/html/public/uploads
 
 
 # Set working dir
@@ -40,10 +41,18 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
+RUN php artisan storage:link
+
+#Install npm and build assets
+RUN apt-get install -y nodejs npm
+RUN npm install && npm run build
 
 
 # Set permissions for Laravel storage and cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage \
+    && chmod -R 775 /var/www/html/storage \
+    && chown -R www-data:www-data /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/bootstrap/cache
 
 # Expose Render's required port
 EXPOSE 10000
