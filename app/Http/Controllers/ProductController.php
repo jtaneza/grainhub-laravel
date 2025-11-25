@@ -65,7 +65,7 @@ class ProductController extends Controller
             $fileType = $file->getClientMimeType();
             $fileSize = $file->getSize();
 
-            $file->move(public_path('uploads/products'), $fileName);
+            $file->move(public_path('storage/uploads/products'), $fileName);
 
             $media = Media::create([
                 'file_name' => $fileName,
@@ -127,8 +127,8 @@ class ProductController extends Controller
 
         // 🖼️ Replace image if new one is uploaded
         if ($request->hasFile('photo')) {
-            if ($product->media && file_exists(public_path('uploads/products/' . $product->media->file_name))) {
-                unlink(public_path('uploads/products/' . $product->media->file_name));
+            if ($product->media && file_exists(public_path('storage/uploads/products/' . $product->media->file_name))) {
+                unlink(public_path('storage/uploads/products/' . $product->media->file_name));
                 $product->media->delete();
             }
 
@@ -137,7 +137,7 @@ class ProductController extends Controller
             $fileType = $file->getClientMimeType();
             $fileSize = $file->getSize();
 
-            $file->move(public_path('uploads/products'), $fileName);
+            $file->move(public_path('storage/uploads/products'), $fileName);
 
             $media = Media::create([
                 'file_name' => $fileName,
@@ -183,7 +183,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         if ($product->media && file_exists(public_path('uploads/products/' . $product->media->file_name))) {
-            unlink(public_path('uploads/products/' . $product->media->file_name));
+            unlink(public_path('storage/uploads/products/' . $product->media->file_name));
             $product->media->delete();
         }
 
