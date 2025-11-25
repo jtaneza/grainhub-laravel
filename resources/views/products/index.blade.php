@@ -64,10 +64,10 @@
       {{-- 🖼 Product Image --}}
       <td class="text-center">
         @if($product->media && $product->media->file_name)
-          <img src="{{ asset('uploads/products/'.$product->media->file_name) }}"
+          <img src="{{ asset('storage/uploads/products/'.$product->media->file_name) }}"
                class="img-avatar img-circle" width="50" height="50" alt="">
         @else
-          <img src="{{ asset('uploads/products/no_image.png') }}"
+          <img src="{{ asset('storage/uploads/products/no_image.png') }}"
                class="img-avatar img-circle" width="50" height="50" alt="">
         @endif
       </td>
