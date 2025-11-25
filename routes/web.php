@@ -22,7 +22,6 @@ use App\Http\Controllers\ProfileController;
 | 🔐 Authentication Routes
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -45,8 +44,7 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     // Admin Dashboard
-    Route::get('/', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('dashboard');
-
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Cashier Dashboard
     Route::middleware(['auth', 'cashier'])->prefix('cashier')->group(function () {
