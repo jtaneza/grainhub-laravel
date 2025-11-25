@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', 'Sales bydates Report')
 
 @section('content')
 
