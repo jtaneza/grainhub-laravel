@@ -1,55 +1,45 @@
-# Use official PHP with Apache
+# Use PHP + Apache
 FROM php:8.2-apache
 
-# Install required PHP extensions for Laravel
+# Install system packages
 RUN apt-get update && apt-get install -y \
-    git unzip libpq-dev libzip-dev zip \
+    git unzip curl libpq-dev libzip-dev zip \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip
 
-# Enable Apache mod_rewrite (needed for Laravel routes)
+# Enable mod_rewrite
 RUN a2enmod rewrite
 
-# Set Apache DocumentRoot to /var/www/html/public (Laravel entry point)
+# Set document root
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
     && sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
 
-
-
-# Copy app code
+# Copy source code
 COPY . /var/www/html/
 
-# Create uploads folder and set permissions
-RUN mkdir -p /var/www/html/public/uploads/users \
-    && mkdir -p /var/www/html/public/uploads/products \
-    && chown -R www-data:www-data /var/www/html/public/uploads \
-    && chmod -R 775 /var/www/html/public/uploads
-
-
-# Set working dir
 WORKDIR /var/www/html
 
-
-# Install Composer //changes
+# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-
-# Install Laravel dependencies
+# Optimize Laravel
 RUN composer install --no-dev --optimize-autoloader
+RUN cp .env.example .env
+RUN php artisan key:generate
 RUN php artisan storage:link
+RUN php artisan config:cache
 
-#Install npm and build assets
-RUN apt-get install -y nodejs npm
+# Install Node 20 (for Vite)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+# Build frontend
 RUN npm install && npm run build
 
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Set permissions for Laravel storage and cache
-RUN chown -R www-data:www-data /var/www/html/storage \
-    && chmod -R 775 /var/www/html/storage \
-    && chown -R www-data:www-data /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/bootstrap/cache
-
-# Expose Render's required port
+# Expose port (Render handles routing)
 EXPOSE 10000
 
-# Start Apache
 CMD ["apache2-foreground"]
