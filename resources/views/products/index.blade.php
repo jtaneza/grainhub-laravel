@@ -3,16 +3,12 @@
 
 @section('content')
 <div class="row">
-  <div class="col-md-12">
-     <strong><span class="glyphicon glyphicon-th"></span> ALL PRODUCTS</strong>
-    <hr>
-  </div>
 
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading clearfix">
-
-        {{-- 🔍 Search Form --}}
+      
+      {{-- 🔍 Search Form --}}
         <div class="pull-left">
           <form method="GET" action="{{ route('products.index') }}" class="form-inline">
             <input type="text" name="search" class="form-control" placeholder="Search product..."

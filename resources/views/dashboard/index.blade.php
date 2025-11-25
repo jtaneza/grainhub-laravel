@@ -170,7 +170,7 @@
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center;">
-                <strong>Sales Overview</strong>
+                <strong><span class="glyphicon glyphicon-stats"></span> Sales Overview</strong>
                 <div class="btn-group" role="group" aria-label="Select Range">
                     <button class="btn btn-default btn-xs" onclick="updateChart('daily')">Daily</button>
                     <button class="btn btn-default btn-xs" onclick="updateChart('weekly')">Weekly</button>
