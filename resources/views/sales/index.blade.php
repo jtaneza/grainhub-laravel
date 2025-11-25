@@ -17,15 +17,11 @@
         <div class="panel panel-default shadow-sm">
             <div class="panel-heading clearfix bg-primary text-white p-2 rounded-top">
                 <strong><span class="glyphicon glyphicon-th"></span> All Sales</strong>
-
-                {{-- Only admin can add sales --}}
-                @if(Auth::user()->user_level == 1)
-                    <div class="pull-right">
-                        <button class="btn btn-success btn-sm" id="btnAddSale">
-                            <i class="glyphicon glyphicon-plus"></i> Add Sale
-                        </button>
-                    </div>
-                @endif
+                <div class="pull-right">
+                    <button class="btn btn-success btn-sm" id="btnAddSale">
+                        <i class="glyphicon glyphicon-plus"></i> Add Sale
+                    </button>
+                </div>
             </div>
 
             <div class="panel-body bg-light">
@@ -39,14 +35,9 @@
                             <th class="text-center" style="width: 10%;">Total</th>
                             <th class="text-center" style="width: 15%;">Admin</th>
                             <th class="text-center" style="width: 20%;">Date & Time</th>
-
-                            {{-- Only admin sees Actions column --}}
-                            @if(Auth::user()->user_level == 1)
-                                <th class="text-center" style="width: 100px;">Actions</th>
-                            @endif
+                            <th class="text-center" style="width: 100px;">Actions</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         @php
                             $sortedSales = $sales->sortByDesc('date');
@@ -56,13 +47,13 @@
                             @php
                                 $stock = (int) ($sale->product->quantity ?? 0);
                                 if ($stock <= 10) {
-                                    $stockColor = '#f8d7da';
+                                    $stockColor = '#f8d7da'; // 🔴 Low stock
                                     $textColor = '#721c24';
                                 } elseif ($stock <= 30) {
-                                    $stockColor = '#fff3cd';
+                                    $stockColor = '#fff3cd'; // 🟡 Moderate stock
                                     $textColor = '#856404';
                                 } else {
-                                    $stockColor = '#d4edda';
+                                    $stockColor = '#d4edda'; // 🟢 Plenty
                                     $textColor = '#155724';
                                 }
                             @endphp
@@ -70,35 +61,27 @@
                             <tr>
                                 <td class="text-center">{{ $index + 1 }}</td>
                                 <td style="text-align: left; padding-left: 15px;">{{ $sale->product->name ?? 'N/A' }}</td>
-
                                 <td class="text-center" style="background-color: {{ $stockColor }}; color: {{ $textColor }}; font-weight: bold;">
                                     {{ $sale->product->quantity ?? 0 }}
                                 </td>
-
                                 <td class="text-center">{{ $sale->qty }}</td>
                                 <td class="text-center">₱{{ number_format($sale->price, 2) }}</td>
                                 <td class="text-center">{{ $sale->admin_name ?? 'N/A' }}</td>
                                 <td class="text-center">{{ \Carbon\Carbon::parse($sale->date)->format('Y-m-d h:i A') }}</td>
 
-                                {{-- Only admin sees edit/delete --}}
-                                @if(Auth::user()->user_level == 1)
                                 <td class="text-center">
-
-                                    <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-warning btn-xs">
+                                    <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-warning btn-xs" title="Edit Sale">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </a>
 
-                                    <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" style="display:inline;">
+                                    <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" onsubmit="return confirm('Delete sale?');" style="display:inline;">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-xs">
+                                        <button type="submit" class="btn btn-danger btn-xs" title="Delete">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </form>
-
                                 </td>
-                                @endif
                             </tr>
-
                         @endforeach
                     </tbody>
                 </table>
@@ -129,7 +112,6 @@
         <input type="hidden" name="sale_id" id="edit_sale_id">
 
         <div class="modal-body">
-
           <div class="mb-2">
             <label class="form-label">Product</label>
             <select name="product_id" id="edit_product_id" class="form-select form-select-sm">
@@ -174,16 +156,77 @@
 @push('scripts')
 <script>
 $(document).ready(function () {
-
-    @if(Auth::user()->user_level == 1)
-        // Add sale modal only for admin
-        $('#btnAddSale').click(function () {
-            $('#addSaleContent').load("{{ route('sales.create') }}", function () {
-                $('#addSaleModal').modal('show');
-            });
+    // ➕ Add Sale
+    $('#btnAddSale').click(function () {
+        $('#addSaleContent').load("{{ route('sales.create') }}", function () {
+            $('#addSaleModal').modal('show');
         });
-    @endif
+    });
 
+    // 💾 Add Sale Submit
+    $(document).on('submit', '#addSaleForm', function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: "{{ route('sales.store') }}",
+            method: "POST",
+            data: $(this).serialize(),
+            success: function (res) {
+                if (res.success) {
+                    $('#addSaleModal').modal('hide');
+                    $('#message').removeClass('alert-danger')
+                        .addClass('alert-success')
+                        .text('✅ Sale added successfully by ' + res.sale.admin)
+                        .fadeIn().delay(3000).fadeOut();
+                    setTimeout(() => location.reload(), 1000);
+                }
+            },
+            error: function () {
+                $('#message').removeClass('alert-success')
+                    .addClass('alert-danger')
+                    .text("⚠️ Error while adding sale.")
+                    .fadeIn().delay(4000).fadeOut();
+            }
+        });
+    });
+
+    // ✏️ Edit Sale Button
+    $('.btn-edit-sale').click(function () {
+        const sale = $(this).data('sale');
+        $('#edit_sale_id').val(sale.id);
+        $('#edit_product_id').val(sale.product_id);
+        $('#edit_qty').val(sale.qty);
+        $('#edit_price').val(sale.price);
+        $('#edit_date').val(sale.date);
+        $('#edit_admin').val('{{ Auth::user()->name }}');
+        $('#editSaleModal').modal('show');
+    });
+
+    // 💾 Update Sale (AJAX)
+    $('#editSaleForm').submit(function (e) {
+        e.preventDefault();
+        const id = $('#edit_sale_id').val();
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: `/sales/${id}`,
+            method: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            },
+            success: function (data) {
+                if (data.success) {
+                    alert(`✅ Sale updated successfully by ${data.sale.admin_name}`);
+                    location.reload();
+                } else {
+                    alert(data.error || 'Something went wrong.');
+                }
+            },
+            error: function () {
+                alert('⚠️ Error updating sale.');
+            }
+        });
+    });
 });
 </script>
 @endpush
