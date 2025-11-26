@@ -108,43 +108,63 @@
 </div>
 <!-- TRANSACTION LOGS MODAL -->
 <div class="modal fade" id="transactionLogsModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document" style="max-width: 65%; width: 65%;"> <!-- Almost full screen horizontally -->
         <div class="modal-content">
 
-            <div class="modal-header bg-warning text-white">
-                <h4 class="modal-title">
-                    <i class="glyphicon glyphicon-list"></i> Transaction Logs
-                </h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
+<!-- Header with color -->
+<div class="modal-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h4 class="modal-title mb-0">
+        <i class="glyphicon glyphicon-list"></i> Transaction Logs
+    </h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+</button>
 
-            <div class="modal-body">
-                <table class="table table-bordered table-striped">
-                    <thead class="bg-warning text-white">
-                        <tr>
-                            <th>Date & Time</th>
-                            <th>User ID</th>
-                            <th>Name</th>
-                            <th>Role</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($logs ?? [] as $log)
-                            <tr>
-                                <td>{{ $log->created_at }}</td>
-                                <td>{{ $log->user_id }}</td>
-                                <td>{{ $log->user->username ?? 'N/A' }}</td>
-                                <td>{{ $log->user->user_level == 1 ? 'Admin' : 'Cashier' }}</td>
-                                <td>{{ $log->action }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 </div>
+
+<!-- Body with scrollable table -->
+<div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-striped table-hover table-sm" style="font-size: 14px;">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th style="width: 130px;">Date & Time</th>
+                <th style="width: 80px;">Name</th>
+                <th style="width: 80px;">Role</th>
+                <th style="width: 120px;">Product</th>
+                <th style="width: 90px;">Action</th>
+                <th style="width: 140px; max-width: 150px;">Details</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse($logs as $log)
+            <tr>
+                <td>{{ \Carbon\Carbon::parse($log->created_at)->format('Y-m-d h:i A') }}</td>
+                <td>{{ $log->user_name ?? 'System' }}</td>
+                <td>
+                    @if($log->user)
+                        {{ $log->user->user_level == 1 ? 'Admin' : 'Cashier' }}
+                    @else
+                        System
+                    @endif
+                </td>
+                <td>{{ $log->sale->product->name ?? 'N/A' }}</td>
+                <td>{{ $log->action }}</td>
+                <td style="max-width:200px; word-wrap:break-word; overflow-x: auto; font-family: monospace;">
+                    {{ $log->changes }}
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    No transaction logs found.
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
 
 {{-- Edit Sale Modal --}}
 <div class="modal fade" id="editSaleModal" tabindex="-1" aria-labelledby="editSaleModalLabel" aria-hidden="true">

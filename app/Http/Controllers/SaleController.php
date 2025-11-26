@@ -102,7 +102,7 @@ class SaleController extends Controller
             $sale = Sale::create([
                 'product_id' => $product->id,
                 'qty'        => $request->quantity,
-                'price'      => $total,
+                'price'      => $total, // store total price
                 'date'       => $saleDate,
                 'admin_name' => $adminName,
                 'admin_id'   => $adminId,
@@ -117,7 +117,7 @@ class SaleController extends Controller
                 'user_name' => $adminName,
                 'action' => 'Created Sale',
                 'sale_id' => $sale->id,
-                'changes' => "Product: {$product->name}, Qty: {$request->quantity}, Total: {$total}",
+                'changes' => "Product: {$product->name} | Qty: {$request->quantity} | Total: {$total}",
                 'created_at' => $saleDate,
             ]);
 
@@ -160,6 +160,7 @@ class SaleController extends Controller
         try {
             $sale = Sale::findOrFail($id);
             $oldQty = $sale->qty;
+            $oldTotal = $sale->price;
             $product = Product::findOrFail($sale->product_id);
 
             // Restore old stock
@@ -176,17 +177,11 @@ class SaleController extends Controller
             $adminName = Auth::user()->name ?? 'System Admin';
             $adminId   = Auth::id() ?? null;
 
-            $oldData = [
-                'product_id' => $sale->product_id,
-                'qty'        => $sale->qty,
-                'price'      => $sale->price,
-            ];
-
             // Update sale
             $sale->update([
                 'product_id' => $newProduct->id,
                 'qty'        => $request->qty,
-                'price'      => $request->price,
+                'price'      => $newProduct->sale_price * $request->qty, // store total price
                 'date'       => $formattedDate,
                 'admin_name' => $adminName,
                 'admin_id'   => $adminId,
@@ -195,21 +190,23 @@ class SaleController extends Controller
             // Deduct new stock
             $newProduct->decrement('quantity', $request->qty);
 
+            // Determine arrows
+            $qtyArrow = $request->qty > $oldQty ? '↑' : ($request->qty < $oldQty ? '↓' : '→');
+            $priceArrow = ($newProduct->sale_price * $request->qty) > $oldTotal ? '↑' : (( $newProduct->sale_price * $request->qty) < $oldTotal ? '↓' : '→');
+
+            $newTotal = $newProduct->sale_price * $request->qty;
+
+            // Build changes string
+            $changes = "Product: {$newProduct->name} | Qty: {$oldQty} → {$request->qty} {$qtyArrow} | Total: {$oldTotal} → {$newTotal} {$priceArrow}";
+
             // Log transaction
             TransactionLog::create([
-                'user_id' => $adminId,
+                'user_id'   => $adminId,
                 'user_name' => $adminName,
-                'action' => 'Updated Sale',
-                'sale_id' => $sale->id,
-                'changes' => json_encode([
-                    'old' => $oldData,
-                    'new' => [
-                        'product_id' => $newProduct->id,
-                        'qty'        => $request->qty,
-                        'price'      => $request->price,
-                    ]
-                ]),
-                'created_at' => Carbon::now('Asia/Manila')->toDateTimeString(),
+                'action'    => 'Updated Sale',
+                'sale_id'   => $sale->id,
+                'changes'   => $changes,
+                'created_at'=> Carbon::now('Asia/Manila')->toDateTimeString(),
             ]);
 
             DB::commit();

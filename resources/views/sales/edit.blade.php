@@ -73,8 +73,9 @@
 
                                 {{-- Date --}}
                                 <td style="width: 20%;">
-                                    <input type="date" name="date" class="form-control input-sm text-center"
-                                           value="{{ \Carbon\Carbon::parse($sale->date)->format('Y-m-d') }}" required>
+                                    <input type="datetime-local" name="date" class="form-control input-sm text-center"
+                                   value="{{ \Carbon\Carbon::parse($sale->date)->format('Y-m-d\TH:i') }}" required>
+
                                 </td>
 
                                 {{-- Action --}}
