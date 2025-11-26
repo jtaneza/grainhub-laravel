@@ -137,13 +137,11 @@
                                 <td>{{ $log->user->username ?? 'N/A' }}</td>
                                 <td>{{ $log->user->user_level == 1 ? 'Admin' : 'Cashier' }}</td>
                                 <td>{{ $log->action }}</td>
-                                
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
 </div>
