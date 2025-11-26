@@ -5,9 +5,14 @@
 <div class="row">
   <div class="col-md-6">
     <div class="panel panel-default shadow-sm">
-      <div class="panel-heading bg-primary text-white">
-        <strong><i class="glyphicon glyphicon-lock"></i> Change Password</strong>
-      </div>
+      <div class="panel-heading bg-primary text-white clearfix">
+    <strong><i class="glyphicon glyphicon-lock"></i> Change Password</strong>
+
+    <a href="{{ route('profile.edit') }}" class="btn btn-default pull-right">
+        <i class="glyphicon glyphicon-arrow-left"></i> Back
+    </a>
+</div>
+
 
       <div class="panel-body">
         {{-- ✅ Flash Message --}}
@@ -64,13 +69,10 @@
               placeholder="Re-enter new password">
           </div>
 
-          <div class="text-center">
+          <div class="text-left">
             <button type="submit" class="btn btn-success">
               <i class="glyphicon glyphicon-ok"></i> Update Password
             </button>
-            <a href="{{ route('profile.edit') }}" class="btn btn-default">
-              <i class="glyphicon glyphicon-arrow-left"></i> Back
-            </a>
           </div>
         </form>
       </div>
