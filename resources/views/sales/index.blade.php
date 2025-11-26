@@ -69,18 +69,25 @@
                                 <td class="text-center">{{ $sale->admin_name ?? 'N/A' }}</td>
                                 <td class="text-center">{{ \Carbon\Carbon::parse($sale->date)->format('Y-m-d h:i A') }}</td>
 
-                                <td class="text-center">
-                                    <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-warning btn-xs" title="Edit Sale">
-                                        <span class="glyphicon glyphicon-edit"></span>
-                                    </a>
+                               <td class="text-center">
+    {{-- Edit is visible to both Admin and Cashier --}}
+    <a href="{{ route('sales.edit', $sale->id) }}" class="btn btn-warning btn-xs">
+        <span class="glyphicon glyphicon-edit"></span>
+    </a>
 
-                                    <form action="{{ route('sales.destroy', $sale->id) }}" method="POST" onsubmit="return confirm('Delete sale?');" style="display:inline;">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-xs" title="Delete">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
-                                    </form>
-                                </td>
+    {{-- Delete is only for Admin (user_level = 1) --}}
+    @if(auth()->check() && auth()->user()->user_level == 1)
+        <form action="{{ route('sales.destroy', $sale->id) }}" method="POST"
+              style="display:inline;" onsubmit="return confirm('Delete sale?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger btn-xs">
+                <span class="glyphicon glyphicon-trash"></span>
+            </button>
+        </form>
+    @endif
+</td>
+
                             </tr>
                         @endforeach
                     </tbody>
