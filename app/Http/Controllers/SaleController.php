@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Models\TransactionLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,12 +13,19 @@ use Illuminate\Support\Facades\DB;
 class SaleController extends Controller
 {
     /**
-     * 🧾 Show all sales
+     * 🧾 Show all sales (for all roles)
      */
     public function index()
     {
         $sales = Sale::with('product')->latest('date')->get();
-        return view('sales.index', compact('sales'));
+
+        // Get latest 200 transaction logs
+        $logs = TransactionLog::with('user')
+            ->orderBy('created_at', 'desc')
+            ->limit(200)
+            ->get();
+
+        return view('sales.index', compact('sales', 'logs'));
     }
 
     /**
@@ -85,14 +93,12 @@ class SaleController extends Controller
 
         $adminName = Auth::user()->name ?? 'System Admin';
         $adminId   = Auth::id() ?? null;
-
-        // ✅ Include full datetime with timezone
-        $saleDate = Carbon::now('Asia/Manila')->toDateTimeString();
-        $total = $product->sale_price * $request->quantity;
+        $saleDate  = Carbon::now('Asia/Manila')->toDateTimeString();
+        $total     = $product->sale_price * $request->quantity;
 
         DB::beginTransaction();
         try {
-            // ✅ Create sale with admin_id
+            // Create sale
             $sale = Sale::create([
                 'product_id' => $product->id,
                 'qty'        => $request->quantity,
@@ -105,12 +111,22 @@ class SaleController extends Controller
             // Deduct stock
             $product->decrement('quantity', $request->quantity);
 
+            // Create transaction log
+            TransactionLog::create([
+                'user_id' => $adminId,
+                'user_name' => $adminName,
+                'action' => 'Created Sale',
+                'sale_id' => $sale->id,
+                'changes' => "Product: {$product->name}, Qty: {$request->quantity}, Total: {$total}",
+                'created_at' => $saleDate,
+            ]);
+
             DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => '✅ Sale successfully added!',
-                'sale'    => [
+                'sale' => [
                     'item'  => $product->name,
                     'price' => $product->sale_price,
                     'qty'   => $request->quantity,
@@ -129,7 +145,7 @@ class SaleController extends Controller
     }
 
     /**
-     * ♻️ Update sale (Form submission, not AJAX)
+     * ♻️ Update sale
      */
     public function update(Request $request, $id)
     {
@@ -149,35 +165,56 @@ class SaleController extends Controller
             // Restore old stock
             $product->increment('quantity', $oldQty);
 
-            // Check new product (in case changed)
             $newProduct = Product::findOrFail($request->product_id);
 
-            // Check stock availability
             if ($newProduct->quantity < $request->qty) {
                 DB::rollBack();
                 return back()->with('error', 'Not enough stock for the selected product.');
             }
 
-            // ✅ Save date with time (not midnight)
             $formattedDate = Carbon::parse($request->date, 'Asia/Manila')->toDateTimeString();
+            $adminName = Auth::user()->name ?? 'System Admin';
+            $adminId   = Auth::id() ?? null;
 
-            // ✅ Update sale record with admin_id
+            $oldData = [
+                'product_id' => $sale->product_id,
+                'qty'        => $sale->qty,
+                'price'      => $sale->price,
+            ];
+
+            // Update sale
             $sale->update([
                 'product_id' => $newProduct->id,
                 'qty'        => $request->qty,
                 'price'      => $request->price,
                 'date'       => $formattedDate,
-                'admin_name' => Auth::user()->name ?? 'System Admin',
-                'admin_id'   => Auth::id() ?? null,
+                'admin_name' => $adminName,
+                'admin_id'   => $adminId,
             ]);
 
             // Deduct new stock
             $newProduct->decrement('quantity', $request->qty);
 
+            // Log transaction
+            TransactionLog::create([
+                'user_id' => $adminId,
+                'user_name' => $adminName,
+                'action' => 'Updated Sale',
+                'sale_id' => $sale->id,
+                'changes' => json_encode([
+                    'old' => $oldData,
+                    'new' => [
+                        'product_id' => $newProduct->id,
+                        'qty'        => $request->qty,
+                        'price'      => $request->price,
+                    ]
+                ]),
+                'created_at' => Carbon::now('Asia/Manila')->toDateTimeString(),
+            ]);
+
             DB::commit();
 
-            return redirect()
-                ->route('sales.edit', $sale->id)
+            return redirect()->route('sales.edit', $sale->id)
                 ->with('success', 'Sale updated successfully.');
 
         } catch (\Exception $e) {
@@ -193,10 +230,26 @@ class SaleController extends Controller
     {
         $sale = Sale::findOrFail($id);
         $product = $sale->product;
+        $adminName = Auth::user()->name ?? 'System Admin';
+        $adminId   = Auth::id() ?? null;
 
         if ($product) {
             $product->increment('quantity', $sale->qty);
         }
+
+        // Log deletion
+        TransactionLog::create([
+            'user_id'   => $adminId,
+            'user_name' => $adminName,
+            'action'    => 'Deleted Sale',
+            'sale_id'   => $sale->id,
+            'changes'   => json_encode([
+                'product_id' => $sale->product_id,
+                'qty'        => $sale->qty,
+                'price'      => $sale->price,
+            ]),
+            'created_at' => Carbon::now('Asia/Manila')->toDateTimeString(),
+        ]);
 
         $sale->delete();
 
@@ -204,4 +257,3 @@ class SaleController extends Controller
             ->with('success', 'Sale deleted successfully.');
     }
 }
-//

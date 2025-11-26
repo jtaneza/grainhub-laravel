@@ -17,11 +17,14 @@
         <div class="panel panel-default shadow-sm">
             <div class="panel-heading clearfix bg-primary text-white p-2 rounded-top">
                 <strong><span class="glyphicon glyphicon-th"></span> All Sales</strong>
-                <div class="pull-right">
-                    <button class="btn btn-success btn-sm" id="btnAddSale">
-                        <i class="glyphicon glyphicon-plus"></i> Add Sale
-                    </button>
-                </div>
+                <div class="pull-right d-flex">
+    <button class="btn btn-warning btn-sm me-2" data-toggle="modal" data-target="#transactionLogsModal">
+        <i class="glyphicon glyphicon-list"></i> Transaction Logs
+    </button>
+    <button class="btn btn-success btn-sm" id="btnAddSale">
+        <i class="glyphicon glyphicon-plus"></i> Add Sale
+    </button>
+</div>
             </div>
 
             <div class="panel-body bg-light">
@@ -101,6 +104,47 @@
 <div class="modal fade" id="addSaleModal" tabindex="-1" role="dialog" aria-labelledby="addSaleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id="addSaleContent"></div>
+    </div>
+</div>
+<!-- TRANSACTION LOGS MODAL -->
+<div class="modal fade" id="transactionLogsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-warning text-white">
+                <h4 class="modal-title">
+                    <i class="glyphicon glyphicon-list"></i> Transaction Logs
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <table class="table table-bordered table-striped">
+                    <thead class="bg-warning text-white">
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($logs ?? [] as $log)
+                            <tr>
+                                <td>{{ $log->created_at }}</td>
+                                <td>{{ $log->user_id }}</td>
+                                <td>{{ $log->user->username ?? 'N/A' }}</td>
+                                <td>{{ $log->user->user_level == 1 ? 'Admin' : 'Cashier' }}</td>
+                                <td>{{ $log->action }}</td>
+                                
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
     </div>
 </div>
 
