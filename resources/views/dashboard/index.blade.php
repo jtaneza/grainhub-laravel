@@ -68,7 +68,7 @@
                 </div>
                 <div class="panel-value text-center"
                      style="width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <h2 style="margin: 0; font-size: 40px;">{{ $usersCount }}</h2>
+                    <h2 style="margin: 0; font-size: 35px;">{{ $usersCount }}</h2>
                 </div>
             </div>
         </div>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="panel-value text-center"
                      style="width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <h2 style="margin: 0; font-size: 40px;">{{ $categoriesCount }}</h2>
+                    <h2 style="margin: 0; font-size: 35px;">{{ $categoriesCount }}</h2>
                 </div>
             </div>
         </div>
@@ -102,7 +102,7 @@
                 </div>
                 <div class="panel-value text-center"
                      style="width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <h2 style="margin: 0; font-size: 40px;">{{ $productsCount }}</h2>
+                    <h2 style="margin: 0; font-size: 35px;">{{ $productsCount }}</h2>
                 </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
                 </div>
                 <div class="panel-value text-center"
                      style="width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <h2 style="margin: 0; font-size: 40px;">{{ $salesCount }}</h2>
+                    <h2 style="margin: 0; font-size: 35px;">{{ $salesCount }}</h2>
                 </div>
             </div>
         </div>
