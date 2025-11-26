@@ -34,12 +34,12 @@
     <table class="table table-bordered table-striped table-hover align-middle">
       <thead class="bg-light">
         <tr>
-          <th class="text-center" style="width: 50px;">#</th>
-          <th>Supplier Name</th>
-          <th>Contact</th>
-          <th>Email</th>
-          <th>Address</th>
-          <th class="text-center" style="width: 120px;">Actions</th>
+          <th class="text-center bg-primary" style="width: 50px;">#</th>
+          <th class="bg-primary">Supplier Name</th>
+          <th class="bg-primary">Contact</th>
+          <th class="bg-primary">Email</th>
+          <th class="bg-primary">Address</th>
+          <th class="text-center bg-primary" style="width: 120px;">Actions</th>
         </tr>
       </thead>
       <tbody>

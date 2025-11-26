@@ -137,12 +137,12 @@
                 <table class="table table-striped table-bordered table-condensed">
                     <thead>
                         <tr>
-                        <th class="text-center" style="width: 1%;">#</th>
-                        <th class="text-left" style="width: 8%;">Product Name</th>
-                        <th class="text-center" style="width: 2%;">Qty</th>
-                        <th class="text-center" style="width: 7%;">Total Sales</th>
-                        <th class="text-center" style="width: 5%;">Admin/Cashier</th>
-                        <th class="text-center" style="width: 8%;">Date & Time</th>
+                        <th class="text-center bg-primary" style="width: 1%;">#</th>
+                        <th class="text-left bg-primary" style="width: 8%;">Product Name</th>
+                        <th class="text-center bg-primary" style="width: 2%;">Qty</th>
+                        <th class="text-center bg-primary" style="width: 7%;">Total Sales</th>
+                        <th class="text-center bg-primary" style="width: 5%;">Admin/Cashier</th>
+                        <th class="text-center bg-primary" style="width: 8%;">Date & Time</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -202,9 +202,7 @@
                     <p class="text-muted">Lowest Sale</p>
                 </div>
                 <div>
-                    <button class="btn btn-primary btn-sm" onclick="downloadPDF()">
-                        <i class="glyphicon glyphicon-download"></i> Download PDF
-                    </button>
+                    
                 </div>
             </div>
         </div>
@@ -243,20 +241,6 @@ function updateSalesSummary(values) {
     document.getElementById('averageSale').textContent = avg.toLocaleString(undefined,{minimumFractionDigits:2});
     document.getElementById('highestSale').textContent = max.toLocaleString(undefined,{minimumFractionDigits:2});
     document.getElementById('lowestSale').textContent = min.toLocaleString(undefined,{minimumFractionDigits:2});
-}
-
-// ✅ PDF Export
-function downloadPDF() {
-    const chartSection = document.getElementById('chart-section');
-    html2canvas(chartSection).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jspdf.jsPDF('landscape', 'mm', 'a4');
-        const imgWidth = 280;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        pdf.text("Sales Overview Report", 14, 15);
-        pdf.addImage(imgData, 'PNG', 10, 25, imgWidth, imgHeight);
-        pdf.save('sales_overview.pdf');
-    });
 }
 
 // ✅ Fetch + Update Chart

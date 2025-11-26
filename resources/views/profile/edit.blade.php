@@ -9,6 +9,9 @@
     <div class="panel panel-default shadow-sm">
       <div class="panel-heading clearfix" style="border-bottom:3px solid orange;">
         <strong><span class="glyphicon glyphicon-camera"></span> CHANGE MY PHOTO</strong>
+      <a href="{{ route('profile.show') }}" class="btn btn-default btn-sm pull-right">
+                        <i class="glyphicon glyphicon-arrow-left"></i> Back
+                    </a>
       </div>
       <div class="panel-body text-center">
         {{-- ✅ Success Message --}}

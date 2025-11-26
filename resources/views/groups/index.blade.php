@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading clearfix">
                     <strong>
@@ -21,8 +21,8 @@
                     <table class="table table-bordered table-striped">
                         <thead style="border-bottom: 3px solid #FFa500;">
                             <tr>
-                                <th class="text-center" style="width: 50px;">#</th>
-                                <th>Group Name</th>
+                                <th class="text-center" style="width: 40px;">#</th>
+                                <th style="width: 300px;">Group Name</th>
                                 <th class="text-center" style="width: 150px;">Group Level</th>
                                 <th class="text-center" style="width: 150px;">Status</th>
                                 <th class="text-center" style="width: 150px;">Actions</th>

@@ -35,20 +35,20 @@
         <table class="table table-bordered table-striped">
           <thead>
   <tr>
-    <th class="text-center" style="width: 5%;">#</th>
-    <th>Photo</th>
-    <th class="text-center" style="width: 10%;">Product Title</th>
-    <th class="text-center" style="width: 10%;">Category</th>
-    <th class="text-center" style="width: 15%;">Supplier</th>
-    <th class="text-center" style="width: 10%;">In-Stock</th>
-    <th class="text-center" style="width: 10%;">Buying Price</th>
-    <th class="text-center" style="width: 10%;">Selling Price</th>
-    <th class="text-center" style="width: 15%;">Entry Date</th>
-    <th class="text-center" style="width: 10%;">Admin Name</th>
+    <th class="text-center bg-primary" style="width: 5%;">#</th>
+    <th class="bg-primary">Photo</th>
+    <th class="text-center bg-primary" style="width: 10%;">Product Title</th>
+    <th class="text-center bg-primary" style="width: 10%;">Category</th>
+    <th class="text-center bg-primary" style="width: 15%;">Supplier</th>
+    <th class="text-center bg-primary" style="width: 10%;">In-Stock</th>
+    <th class="text-center bg-primary" style="width: 10%;">Buying Price</th>
+    <th class="text-center bg-primary" style="width: 10%;">Selling Price</th>
+    <th class="text-center bg-primary" style="width: 15%;">Entry Date</th>
+    <th class="text-center bg-primary" style="width: 10%;">Admin Name</th>
 
     {{-- Show "Actions" only for Admin --}}
     @if(auth()->check() && auth()->user()->user_level == 1)
-      <th class="text-center" style="width: 100px;">Actions</th>
+      <th class="text-center bg-primary" style="width: 100px;">Actions</th>
     @endif
   </tr>
 </thead>

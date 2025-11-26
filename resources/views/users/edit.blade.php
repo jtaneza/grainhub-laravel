@@ -20,6 +20,9 @@
                     <strong>
                         <i class="glyphicon glyphicon-th"></i> UPDATE ACCOUNT
                     </strong>
+                    <a href="{{ route('users.index') }}" class="btn btn-default btn-sm pull-right">
+                        <i class="glyphicon glyphicon-arrow-left"></i> Back
+                    </a>
                 </div>
 
                 <div class="panel-body">

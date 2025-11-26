@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-10">
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @elseif (session('error'))
@@ -12,7 +12,7 @@
             @endif
         </div>
 
-        <div class="col-md-12">
+        <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading clearfix" style="border-bottom: 3px solid #FFa500;">
                     <strong>

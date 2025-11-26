@@ -17,6 +17,9 @@
             {{-- ✅ Header --}}
             <div class="panel-heading clearfix bg-primary text-white p-2 rounded-top d-flex justify-content-between align-items-center">
                 <strong><span class="glyphicon glyphicon-th"></span> Edit Sale</strong>
+            <a href="{{ route('sales.index') }}" class="btn btn-default btn-sm pull-right">
+          <i class="glyphicon glyphicon-arrow-left"></i> Back
+        </a>
             </div>
 
             {{-- ✅ Body --}}

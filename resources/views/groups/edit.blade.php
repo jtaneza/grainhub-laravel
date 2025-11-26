@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-7">
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @elseif (session('error'))
@@ -24,7 +24,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading clearfix">
                     <strong>
@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="panel-body">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <form method="POST" action="{{ route('groups.update', $group->id) }}" autocomplete="off">
                             @csrf
                             @method('PUT')

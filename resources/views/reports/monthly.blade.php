@@ -11,12 +11,12 @@
       <table class="table table-bordered table-striped table-hover align-middle">
         <thead class="table-dark">
           <tr>
-            <th class="text-center">#</th>
-            <th>Product</th>
-            <th class="text-center">Qty</th>
-            <th class="text-center">Total</th>
-            <th class="text-center">Month</th>
-            <th class="text-center">Admin/Cashier</th>
+            <th class="text-center bg-primary">#</th>
+            <th class="bg-primary">Product</th>
+            <th class="text-center bg-primary">Qty</th>
+            <th class="text-center bg-primary">Total</th>
+            <th class="text-center bg-primary">Month</th>
+            <th class="text-center bg-primary">Admin/Cashier</th>
           </tr>
         </thead>
 

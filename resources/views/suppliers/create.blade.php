@@ -2,7 +2,7 @@
 @section('title', 'Add Supplier')
 @section('content')
 <div class="row">
-  <div class="col-md-8 offset-md-2">
+  <div class="col-md-7 offset-md-2">
     <div class="panel panel-default shadow-sm">
       {{-- 🔹 Panel Heading --}}
       <div class="panel-heading clearfix" style="border-bottom: 3px solid #f4b400;">

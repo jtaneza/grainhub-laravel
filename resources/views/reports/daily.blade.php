@@ -12,12 +12,12 @@
       <table class="table table-bordered table-striped">
         <thead>
           <tr>
-            <th class="text-center">#</th>
-            <th>Product</th>
-            <th class="text-center">Qty</th>
-            <th class="text-center">Total</th>
-            <th class="text-center">Admin/Cashier</th>
-            <th class="text-center">Date & Time</th>
+            <th class="text-center bg-primary">#</th>
+            <th class="bg-primary">Product</th>
+            <th class="text-center bg-primary">Qty</th>
+            <th class="text-center bg-primary">Total</th>
+            <th class="text-center bg-primary">Admin/Cashier</th>
+            <th class="text-center bg-primary">Date & Time</th>
 
           </tr>
         </thead>

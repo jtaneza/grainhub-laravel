@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-7">
         @if (session('success'))
             <div class="alert alert-success text-center">{{ session('success') }}</div>
         @elseif ($errors->any())
@@ -18,10 +18,13 @@
         @endif
     </div>
 
-    <div class="col-md-8">
+    <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading" style="border-bottom: 3px solid #FFa500;">
                 <strong><i class="glyphicon glyphicon-th"></i> ADD NEW USER</strong>
+            <a href="{{ route('users.index') }}" class="btn btn-default btn-sm pull-right">
+                        <i class="glyphicon glyphicon-arrow-left"></i> Back
+                    </a>
             </div>
             <div class="panel-body">
                 <form method="POST" action="{{ route('users.store') }}" autocomplete="off">
