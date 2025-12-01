@@ -23,12 +23,13 @@
             : asset('uploads/users/default.png'); // fixed default path
         @endphp
 
-        <img 
-          src="{{ $imagePath }}" 
-          alt="Profile Photo"
-          class="img-circle"
-          style="width:120px; height:120px; object-fit:cover; margin-bottom:10px;"
-        >
+<img 
+    src="{{ $imagePath }}" 
+    alt="Profile Photo"
+    class="img-circle"
+    style="width:120px; height:120px; object-fit:cover; margin-bottom:10px;"
+>
+
 
         <br>
         <a href="{{ route('profile.edit') }}" class="btn btn-warning">
