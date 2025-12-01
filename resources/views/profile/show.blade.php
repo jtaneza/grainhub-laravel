@@ -15,19 +15,19 @@
 
         {{-- USER IMAGE --}}
         @php
-            use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Facades\Storage;
 
-            $imagePath = ($user->image && Storage::disk('public')->exists($user->image))
-                ? asset('storage/' . $user->image)
-                : asset('storage/uploads/users/default.png');
-        @endphp
+    $imagePath = ($user->image && Storage::disk('public')->exists($user->image))
+        ? asset('storage/' . $user->image)
+        : asset('storage/uploads/users/default.png');  // ✔ correct default path
+@endphp
 
-        <img 
-            class="img-circle img-size-2" 
-            src="{{ $imagePath }}" 
-            alt="User Photo"
-            style="width:120px; height:120px; object-fit:cover; margin-bottom:10px;"
-        >
+<img 
+    class="img-circle img-size-2" 
+    src="{{ $imagePath }}" 
+    alt="User Photo"
+    style="width:120px; height:120px; object-fit:cover; margin-bottom:10px;"
+>
 
         <h3 style="margin-top:10px;">{{ ucfirst($user->name) }}</h3>
         <p style="opacity:0.8;">{{ '@' . $user->username }}</p>

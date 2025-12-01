@@ -80,23 +80,21 @@ class ProfileController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // 🖼️ Handle profile image update
-if ($request->hasFile('image')) {
+        // ✅ Handle image update if provided
+        if ($request->hasFile('image')) {
+            if ($user->image && Storage::disk('public')->exists($user->image)) {
+                Storage::disk('public')->delete($user->image);
+            }
 
-    // Delete old image
-    if ($user->image && Storage::disk('public')->exists($user->image)) {
-        Storage::disk('public')->delete($user->image);
-    }
+            $path = $request->file('image')->store('uploads/users', 'public');
+            $user->image = $path;
+        }
 
-    // Store new image in storage/app/public/uploads/users/
-    $path = $request->file('image')->store('uploads/users', 'public');
+        $user->name = $validated['name'];
+        $user->username = $validated['username'];
+        $user->save();
 
-    $user->image = $path; // Example: uploads/users/12345.jpg
-}
-
-
-return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
-
+        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
     }
 
     /**
