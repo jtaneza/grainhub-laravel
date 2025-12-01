@@ -16,9 +16,6 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 # Copy app code
 COPY . /var/www/html/
 
-# Create storage symlink
-RUN php artisan storage:link || true
-
 # Create uploads folder and set permissions
 RUN mkdir -p /var/www/html/public/storage/uploads \
   && chown -R www-data:www-data /var/www/html/public/storage/uploads \
@@ -32,6 +29,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
+RUN php artisan storage:link
 
 # Set permissions for Laravel storage and cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
