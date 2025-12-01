@@ -24,12 +24,15 @@
           @csrf
 
           <img 
-            id="preview"
-            class="img-circle"
-            src="{{ $user->image ? asset('storage/'.$user->image) : asset('uploads/users/default.png') }}" 
-            alt="Profile Picture"
-            style="width:120px; height:120px; object-fit:cover; border-radius:50%; margin-bottom:15px;"
-          >
+    id="preview"
+    class="img-circle"
+    src="{{ $user->image 
+            ? asset('storage/' . $user->image) 
+            : asset('storage/uploads/users/default.png') }}"
+    alt="Profile Picture"
+    style="width:120px; height:120px; object-fit:cover; border-radius:50%; margin-bottom:15px;"
+>
+
 
           <input 
             type="file" 
