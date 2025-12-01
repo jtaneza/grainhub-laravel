@@ -17,8 +17,8 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 COPY . /var/www/html/
 
 # Create uploads folder and set permissions
-RUN mkdir -p /var/www/html/public/storage/uploads \
 RUN mkdir -p /var/www/html/public/storage/uploads/users \
+  && mkdir -p /var/www/html/public/storage/uploads/products \
   && chown -R www-data:www-data /var/www/html/public/storage/uploads \
   && chmod -R 775 /var/www/html/public/storage/uploads
 
