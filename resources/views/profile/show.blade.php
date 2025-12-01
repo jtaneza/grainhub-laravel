@@ -15,17 +15,19 @@
 
         {{-- ✅ User Image --}}
         @php
-          $imagePath = $user->image 
-              ? asset('storage/' . $user->image) 
-              : asset('uploads/users/default.png'); // ✅ fixed path
-        @endphp
+    // ✅ Use storage path for uploaded images, fallback to default
+    $imagePath = $user->image && file_exists(public_path('storage/' . $user->image))
+        ? asset('storage/' . $user->image)
+        : asset('storage/uploads/users/default.png'); // make sure default exists here
+@endphp
 
-        <img 
-          class="img-circle img-size-2" 
-          src="{{ $imagePath }}" 
-          alt="User Photo"
-          style="width:120px; height:120px; object-fit:cover; margin-bottom:10px;"
-        >
+<img 
+    class="img-circle img-size-2" 
+    src="{{ $imagePath }}" 
+    alt="User Photo"
+    style="width:120px; height:120px; object-fit:cover; margin-bottom:10px;"
+>
+
 
         <h3 style="margin-top:10px;">{{ ucfirst($user->name) }}</h3>
         <p style="opacity:0.8;">{{ '@' . $user->username }}</p>
