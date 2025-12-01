@@ -80,21 +80,35 @@ class ProfileController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // ✅ Handle image update if provided
-        if ($request->hasFile('image')) {
-            if ($user->image && Storage::disk('public')->exists($user->image)) {
-                Storage::disk('public')->delete($user->image);
-            }
+        // 🖼️ Handle profile image update
+if ($request->hasFile('image')) {
+    // Delete old image if exists
+    if ($user->image && file_exists(public_path('storage/' . $user->image))) {
+        unlink(public_path('storage/' . $user->image));
+    }
 
-            $path = $request->file('image')->store('uploads/users', 'public');
-            $user->image = $path;
-        }
+    $file     = $request->file('image');
+    $fileName = time() . '_' . $file->getClientOriginalName();
 
-        $user->name = $validated['name'];
-        $user->username = $validated['username'];
-        $user->save();
+    // Ensure the directory exists
+    $destinationPath = public_path('storage/uploads/users');
+    if (!file_exists($destinationPath)) {
+        mkdir($destinationPath, 0755, true);
+    }
 
-        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
+    // Move the file
+    $file->move($destinationPath, $fileName);
+
+    // Save path relative to 'storage'
+    $user->image = 'uploads/users/' . $fileName;
+}
+
+$user->name = $validated['name'];
+$user->username = $validated['username'];
+$user->save();
+
+return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
+
     }
 
     /**
