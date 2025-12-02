@@ -112,7 +112,7 @@
         <div class="modal-content">
 
 <!-- Header with color -->
-<div class="modal-header bg-primary text-white d-flex justify-content-between align-items-center">
+<div class="modal-header bg-light text-white d-flex justify-content-between align-items-center">
     <h4 class="modal-title mb-0">
         <i class="glyphicon glyphicon-list"></i> Transaction Logs
     </h4>
